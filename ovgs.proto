@@ -1,0 +1,175 @@
+// Copyright (c) 2023 Arista Networks, Inc.
+// Use of this source code is governed by the Apache License 2.0
+// that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package ovgs.v1;
+
+option go_package = "arista/sztp/ovgs/gen";
+
+enum userRole {
+    UNSPEC = 0;
+    SUPPORT = 1;
+    ADMIN = 2;
+    REQUESTOR = 3;
+}
+
+message user {
+    string username = 1;     // username or service account name
+    string user_type = 2;    // "account" for service accounts and "user" for user accounts
+    string org_id = 3;       // org_id = "org-" + org name
+    userRole user_role = 4;  // role of the user, either ADMIN or REQUESTOR
+}
+
+message createGroupRequest {
+    string parent = 1;             // parent group ID, it could be org ID or a group ID
+    string group_description = 2;  // general description of the group
+}
+
+message createGroupResponse {
+    string group_id = 1;
+}
+
+message viewGroupRequest {
+    string group_id = 1;
+}
+
+message viewGroupResponse {
+    repeated string certs = 1;
+    repeated string switch_serials = 2;
+    repeated user users = 3;
+    repeated string children = 4;
+}
+
+message deleteGroupRequest {
+    string group_id = 1;
+}
+
+message deleteGroupResponse {}
+
+message assignUserRoleRequest {
+    string username = 1;     // username or service account name
+    string user_type = 2;    // "account" for service accounts and "user" for user accounts
+    string org_id = 3;       // org_id = "org-" + org name
+    string group_id = 4;
+    userRole user_role = 5;  // role of the user, either ADMIN or REQUESTOR
+}
+
+message assignUserRoleResponse {}
+
+message removeUserRoleRequest {
+    string username = 1;     // username or service account name
+    string user_type = 2;    // "account" for service accounts and "user" for user accounts
+    string org_id = 3;       // org_id = "org-" + org name
+    string group_id = 4;
+}
+
+message removeUserRoleResponse {}
+
+message viewUserRoleRequest {
+    string username = 1;     // username or service account name
+    string user_type = 2;    // "account" for service accounts and "user" for user accounts
+    string org_id = 3;       // org_id = "org-" + org name
+}
+
+message viewUserRoleResponse {
+    map<string, userRole> group_to_role = 1;  // mapping from a group to user's role in that group
+}
+
+message setDomainCertRequest {
+    string group_id = 1;
+    bytes certificate_der = 2;
+    bool revocation_checks = 3;
+    google.protobuf.Timestamp expiry_time = 4;
+}
+
+message setDomainCertResponse {
+    string cert_id = 1;
+}
+
+message readDomainCertRequest {
+    string cert_id = 1;
+}
+
+message readDomainCertResponse {
+    string group_id = 1;
+    bytes certificate_der = 2;
+    bool revocation_checks = 3;
+    google.protobuf.Timestamp expiry_time = 4;
+}
+
+message deleteDomainCertRequest {
+    string cert_id = 1;
+}
+
+message deleteDomainCertResponse {}
+
+message assignSerialRequest {
+    string switch_serial = 1;
+    string group_id = 2;
+}
+
+message assignSerialResponse {}
+
+message unassignSerialRequest {
+    string switch_serial = 1;
+    string group_id = 2;
+}
+
+message unassignSerialResponse {}
+
+message viewSerialRequest {
+    string switch_serial = 1;
+}
+
+message viewSerialResponse {
+    bytes public_key_der = 1;
+    repeated string groups = 2;
+    string mac_addr = 3;
+}
+
+message ownershipVoucherRequest {
+    string switch_serial = 1;
+    string cert_id = 2;
+    google.protobuf.Timestamp lifetime = 3;
+    // ien is the device vendor's IANA Enterprise Number
+    string ien = 4;
+}
+
+message ownershipVoucherResponse {
+    bytes voucher_cms = 1; // binary CMS format (rfc5652)
+    bytes public_key_der = 2; // ASN.1 DER encoded
+}
+
+service OwnershipVoucherService {
+    // createGroup creates a group as a child of an existing group
+    rpc createGroup(createGroupRequest) returns (createGroupResponse);
+    // viewGroup returns the domain-certs (keyed by id), serials,
+    // and user/role mappings for that group and all the children.
+    rpc viewGroup(viewGroupRequest) returns (viewGroupResponse);
+    // deleteGroup deletes a named group. Will refuse to do so if there are children groups.
+    rpc deleteGroup(deleteGroupRequest) returns (deleteGroupResponse);
+    // assignUserRole assigns a role to a user in a named group.
+    rpc assignUserRole(assignUserRoleRequest) returns (assignUserRoleResponse);
+    // removeUserRole removes roles of a user in a named group.
+    rpc removeUserRole(removeUserRoleRequest) returns (removeUserRoleResponse);
+    // viewUserRole returns the roles of a user across the groups that they belong to.
+    rpc viewUserRole(viewUserRoleRequest) returns (viewUserRoleResponse);
+    // assignSerial assigns the serial to that group.
+    rpc assignSerial(assignSerialRequest) returns (assignSerialResponse);
+    // unassignSerial removes the serial from the group.
+    rpc unassignSerial(unassignSerialRequest) returns (unassignSerialResponse);
+    // viewSerial returns all the facts about the serial number.
+    rpc viewSerial(viewSerialRequest) returns (viewSerialResponse);
+    // setDomainCert sets the values for the certificate.
+    rpc setDomainCert(setDomainCertRequest) returns (setDomainCertResponse);
+    // readDomainCert reveals the details of the certificate.
+    rpc readDomainCert(readDomainCertRequest) returns (readDomainCertResponse);
+    // deleteDomainCert deletes the cert from the database.
+    rpc deleteDomainCert(deleteDomainCertRequest) returns (deleteDomainCertResponse);
+    // ownershipVoucher issues ownership voucher and returns TPM public key for the serial number
+    rpc ownershipVoucher(ownershipVoucherRequest) returns (ownershipVoucherResponse);
+}
