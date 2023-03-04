@@ -175,18 +175,18 @@ service OwnershipVoucherService {
   // ALREADY_EXISTS if group already exists
   // PERMISSION_DENIED if the user doesn't have access to the parent group
   rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
-  // GetGroup returns the domain-certs (keyed by id), serials,
-  // and user/role mappings for that group and all the children.
-  // Errors will be returned:
-  // NOT_FOUND if the group doesn't exist
-  // PERMISSION_DENIED if the user doesn't have access to the group
-  rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
   // DeleteGroup deletes a named group.
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist
   // FAILED_PRECONDITION if the parent is set but does not exist
   // PERMISSION_DENIED if user doesn't have access to parent group
   rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse);
+  // GetGroup returns the domain-certs (keyed by id), serials,
+  // and user/role mappings for that group and all the children.
+  // Errors will be returned:
+  // NOT_FOUND if the group doesn't exist
+  // PERMISSION_DENIED if the user doesn't have access to the group
+  rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
 
   // CreateUserRole assigns a role to a user in a named group.
   // Errors will be returned:
