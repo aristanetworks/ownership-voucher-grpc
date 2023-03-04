@@ -94,7 +94,6 @@ message GetUserRoleResponse {
   map<string, UserRole> group_to_role = 1;
 }
 
-// if during create how is the id assigned? is there way to add the same cert twice by accident?
 message CreateDomainCertRequest {
   string group_id = 1;
   bytes certificate_der = 2;
@@ -148,7 +147,7 @@ message GetSerialRequest {
 message GetSerialResponse {
   // SKU public key.
   bytes public_key_der = 1;
-  // List of groups the device belongs to.
+  // List of groups the serial number belongs to
   repeated string groups = 2;
   // SKU mac address
   string mac_addr = 3;
@@ -172,45 +171,69 @@ message GetOwnershipVoucherResponse {
 
 service OwnershipVoucherService {
   // CreateGroup creates a group as a child of an existing group.
-  // If the group already exists ALREADY_EXISTS will be returned.
-  // If the parent is set but does not exist FAILED_PRECONDITION
-  // will be returned.
-  // If the user does not have permission to the parent group
-  // PERMISSION_DENIED will be returned.
+  // Errors will be returned:
+  // ALREADY_EXISTS if group already exists
+  // PERMISSION_DENIED if the user doesn't have access to the parent group
   rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
   // GetGroup returns the domain-certs (keyed by id), serials,
   // and user/role mappings for that group and all the children.
-  // If the group doesn't exist NOT_FOUND will be returned.
-  // If the user doesn't have permission to view the group
-  // PERMISSION_DENIED will be  returned.
+  // Errors will be returned:
+  // NOT_FOUND if the group doesn't exist
+  // PERMISSION_DENIED if the user doesn't have access to the group
   rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
   // DeleteGroup deletes a named group.
-  // If the group contains children group FAILED_PRECONDITION will be returned.
-  // if the group doesn't exist NOT_FOUND will be returned.
-  // If the user doesn't have permission to view the group
-  // PERMISSION_DENIED will be  returned.
+  // Errors will be returned:
+  // NOT_FOUND if the group doesn't exist
+  // FAILED_PRECONDITION if the parent is set but does not exist
+  // PERMISSION_DENIED if user doesn't have access to parent group
   rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse);
 
-  // CreateAssignUserRole assigns a role to a user in a named group.
-  rpc AssignUserRole(AssignUserRoleRequest) returns (AssignUserRoleResponse);
-  // UnassignUserRole removes roles of a user in a named group.
-  rpc UnassignUserRole(AssignUserRoleRequest) returns (AssignUserRoleResponse);
+  // CreateUserRole assigns a role to a user in a named group.
+  // Errors will be returned:
+  // ALREADY_EXISTS if user already exists in the group
+  // PERMISSION_DENIED if the user doesn't have access to the group
+  rpc CreateUserRole(AssignUserRoleRequest) returns (AssignUserRoleResponse);
+  // DeleteUserRole removes roles of a user in a named group.
+  // Errors will be returned:
+  // NOT_FOUND if the group doesn't exist
+  // PERMISSION_DENIED if user doesn't have access to the group
+  rpc DeleteUserRole(AssignUserRoleRequest) returns (AssignUserRoleResponse);
   // GetUserRole returns the roles the user is assigned.
+  // Errors will be returned:
+  // NOT_FOUND if the group doesn't exist
+  // PERMISSION_DENIED if the user doesn't have access to the group
   rpc GetUserRole(GetUserRoleRequest) returns (GetUserRoleResponse);
 
   // CreateSerial assigns the serial to that group.
+  // Errors will be returned:
+  // ALREADY_EXISTS if serial_number already exists in the group
+  // PERMISSION_DENIED if the user doesn't have access to the group
   rpc CreateSerial(CreateSerialRequest) returns (CreateSerialResponse);
-  // UnassignSerial removes the serial from the group.
+  // DeleteSerial removes the serial from the group.
+  // Errors will be returned:
+  // NOT_FOUND if the group doesn't exist
+  // PERMISSION_DENIED if user doesn't have access to the group
   rpc DeleteSerial(DeleteSerialRequest) returns (DeleteSerialResponse);
   // GetSerial returns all the facts about the serial number.
+  // Errors will be returned:
+  // NOT_FOUND if the group doesn't exist
+  // PERMISSION_DENIED if the user doesn't have access to the group
   rpc GetSerial(GetSerialRequest) returns (GetSerialResponse);
 
-  // UpdateDomainCert sets the values for the certificate.
-  rpc UpdateDomainCert(setDomainCertRequest) returns (setDomainCertResponse);
-  // readDomainCert reveals the details of the certificate.
-  rpc GetDomainCert(readDomainCertRequest) returns (readDomainCertResponse);
-  // deleteDomainCert deletes the cert from the database.
-  rpc DeleteDomainCert(deleteDomainCertRequest) returns (deleteDomainCertResponse);
+  // CreateDomainCert creates the certificate in the group.
+  // Errors will be returned:
+  // ALREADY_EXISTS if cert already exists in the group
+  // PERMISSION_DENIED if the user doesn't have access to the group
+  rpc CreateDomainCert(CreateDomainCertRequest) returns (CreateDomainCertResponse);
+  // DeleteDomainCert deletes the cert from the database.
+  // Errors will be returned:
+  // NOT_FOUND if the cert doesn't exist
+  // PERMISSION_DENIED if user doesn't have access to the group
+  rpc DeleteDomainCert(DeleteDomainCertRequest) returns (DeleteDomainCertResponse);
+  // GetDomainCert reveals the details of the certificate.
+  // NOT_FOUND if the cert doesn't exist
+  // PERMISSION_DENIED if user doesn't have access to the group
+  rpc GetDomainCert(GetDomainCertRequest) returns (GetDomainCertResponse);
 
   // GetOwnershipVoucher issues ownership voucher and returns TPM public key 
   // for the serial number.
