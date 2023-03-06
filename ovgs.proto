@@ -23,17 +23,21 @@ enum AccountType {
 }
   
 message User {
-  string username = 1;     // username or service account name
-  AccountType user_type = 2;  // user account type
-  string org_id = 3;       // org_id = "org-" + org name
-  UserRole user_role = 4;  // role of the user, either ADMIN or REQUESTOR
+  // Username or Service Account name.
+  string username = 1;     
+  // User account type
+  AccountType user_type = 2;  
+  // org_id = "org-" + org name.
+  string org_id = 3;       
+  // Role of the user, either ADMIN, SUPPORT or REQUESTOR.
+  UserRole user_role = 4;  
 }
 
 message CreateGroupRequest {
-  // parent group ID, it could be org ID or a group ID
+  // Parent group ID, it could be org ID or a group ID.
   string parent = 1;
-  // general description of the group             
-  string group_description = 2;  
+  // Description of the group.
+  string description = 2;  
 }
 
 message CreateGroupResponse {
@@ -45,14 +49,18 @@ message GetGroupRequest {
 }
 
 message GetGroupResponse {
+  // Group id
+  string group_ip = 1;
   // list of certificate ids associated with the group.
-  repeated string cert_ids = 1;
+  repeated string cert_ids = 2;
   // list of device serial numbers in the group.
-  repeated string device_serials = 2;
+  repeated string device_serials = 3;
   // list of users in the group.
-  repeated User users = 3;
+  repeated User users = 4;
   // list of group ids that are children of this group.
-  repeated string children = 4;
+  repeated string child_group_ids = 5;
+  // Description of group
+  string description = 6;
 }
 
 message DeleteGroupRequest {
@@ -62,7 +70,7 @@ message DeleteGroupRequest {
 message DeleteGroupResponse {
 }
 
-message AssignUserRoleRequest {
+message CreateUserRequest {
   string username = 1;     // username or service account name
   string user_type = 2;    // user account type
   string org_id = 3;       // org_id = "org-" + org name
@@ -70,28 +78,28 @@ message AssignUserRoleRequest {
   UserRole user_role = 5;  // role of the user, either ADMIN or REQUESTOR
 }
 
-message AssignUserRoleResponse {
+message CreateUserResponse {
 }
 
-message RemoveUserRoleRequest {
+message DeleteUserRequest {
   string username = 1;        // username or service account name
   AccountType user_type = 2;  // user account type
   string org_id = 3;          // org_id = "org-" + org name
   string group_id = 4;
 }
 
-message RemoveUserRoleResponse {
+message DeleteUserResponse {
 }
 
-message GetUserRoleRequest {
+message GetUserRequest {
   string username = 1;     // username or service account name
   string user_type = 2;    // user role type
   string org_id = 3;       // org_id = "org-" + org name
 }
 
-message GetUserRoleResponse {
+message GetUserResponse {
   // mapping from a group to user's role in that group
-  map<string, UserRole> group_to_role = 1;
+  map<string, UserRole> groups = 1;
 }
 
 message CreateDomainCertRequest {
@@ -124,20 +132,20 @@ message DeleteDomainCertRequest {
 message DeleteDomainCertResponse {
 }
 
-message CreateSerialRequest {
+message AddSerialRequest {
   string serial_number = 1;
   string group_id = 2;
 }
 
-message CreateSerialResponse {
+message AddSerialResponse {
 }
 
-message DeleteSerialRequest {
+message RemoveSerialRequest {
   string serial_number = 1;
   string group_id = 2;
 }
 
-message DeleteSerialResponse {
+message RemoveSerialResponse {
 }
 
 message GetSerialRequest {
@@ -145,7 +153,7 @@ message GetSerialRequest {
 }
 
 message GetSerialResponse {
-  // SKU public key.
+  // SKU public key (if it exists/if applicable)
   bytes public_key_der = 1;
   // List of groups the serial number belongs to.
   repeated string group_ids = 2;
@@ -182,41 +190,46 @@ service OwnershipVoucherService {
   // PERMISSION_DENIED if user doesn't have access to parent group
   rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse);
   // GetGroup returns the domain-certs (keyed by id), serials,
-  // and user/role mappings for that group and all the children.
+  // and user/role mappings for that group and the children group ids.
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist
   // PERMISSION_DENIED if the user doesn't have access to the group
   rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
 
-  // CreateUserRole assigns a role to a user in a named group.
+  // AddUser will create and assign a role to a user in a named group.
+  // Username is unique to Org ID and Username.
   // Errors will be returned:
-  // ALREADY_EXISTS if user already exists in the group
-  // PERMISSION_DENIED if the user doesn't have access to the group
-  rpc CreateUserRole(AssignUserRoleRequest) returns (AssignUserRoleResponse);
-  // DeleteUserRole removes roles of a user in a named group.
+  // ALREADY_EXISTS if user already exists in the group with the role.
+  // PERMISSION_DENIED if the user doesn't have access to the group.
+  rpc AddUser(CreateUserRequest) returns (CreateUserResponse);
+  // DeleteUser removes user with the role from the named group.
+  // Username is unique to Org ID and Username.
   // Errors will be returned:
-  // NOT_FOUND if the group doesn't exist
+  // NOT_FOUND if the group doesn't exist or if the user and role
+  // doesn't exist in the group.
   // PERMISSION_DENIED if user doesn't have access to the group
-  rpc DeleteUserRole(AssignUserRoleRequest) returns (AssignUserRoleResponse);
-  // GetUserRole returns the roles the user is assigned.
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  // GetUserRole returns the roles the user is assigned in the group.
+  // Username is unique to Org ID and Username.
   // Errors will be returned:
-  // NOT_FOUND if the group doesn't exist
+  // NOT_FOUND if the group or the user doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
-  rpc GetUserRole(GetUserRoleRequest) returns (GetUserRoleResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
 
-  // CreateSerial assigns the serial to that group.
+
+  // AddSerial assigns the serial to the group.
   // Errors will be returned:
   // ALREADY_EXISTS if serial_number already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
-  rpc CreateSerial(CreateSerialRequest) returns (CreateSerialResponse);
-  // DeleteSerial removes the serial from the group.
+  rpc AddSerial(AddSerialRequest) returns (AddSerialResponse);
+  // RemoveSerial removes the serial from the group.
   // Errors will be returned:
-  // NOT_FOUND if the group doesn't exist
+  // NOT_FOUND if the serial number or group id doesn't exist
   // PERMISSION_DENIED if user doesn't have access to the group
-  rpc DeleteSerial(DeleteSerialRequest) returns (DeleteSerialResponse);
-  // GetSerial returns all the facts about the serial number.
+  rpc RemoveSerial(RemoveSerialRequest) returns (RemoveSerialResponse);
+  // GetSerial returns serial number, groups the serial belongs to.
   // Errors will be returned:
-  // NOT_FOUND if the group doesn't exist
+  // NOT_FOUND if the serial number or group id doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
   rpc GetSerial(GetSerialRequest) returns (GetSerialResponse);
 
@@ -235,7 +248,7 @@ service OwnershipVoucherService {
   // PERMISSION_DENIED if user doesn't have access to the group
   rpc GetDomainCert(GetDomainCertRequest) returns (GetDomainCertResponse);
 
-  // GetOwnershipVoucher issues ownership voucher and returns TPM public key 
-  // for the serial number.
+  // GetOwnershipVoucher issues ownership voucher and returns TPM public 
+  // key for the serial number (if it exists/if applicable)
   rpc GetOwnershipVoucher(GetOwnershipVoucherRequest) returns (GetOwnershipVoucherResponse);
 }
