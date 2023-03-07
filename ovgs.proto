@@ -50,7 +50,7 @@ message GetGroupRequest {
 
 message GetGroupResponse {
   // Group id
-  string group_ip = 1;
+  string group_id = 1;
   // list of certificate ids associated with the group.
   repeated string cert_ids = 2;
   // list of device serial numbers in the group.
@@ -259,6 +259,7 @@ service OwnershipVoucherService {
 
   // GetOwnershipVoucher issues ownership voucher and returns TPM public 
   // key for the serial number (if it exists/if applicable)
+  // Errors will be returned:
   // INVALID_ARGUMENT if lifetime is in the past and the IEN supplied
   // does not belong to the serial number
   rpc GetOwnershipVoucher(GetOwnershipVoucherRequest) returns (GetOwnershipVoucherResponse);
