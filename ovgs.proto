@@ -50,11 +50,11 @@ message GetGroupRequest {
 
 message GetGroupResponse {
   // Group id
-  string group_ip = 1;
+  string group_id/ = 1;
   // list of certificate ids associated with the group.
   repeated string cert_ids = 2;
-  // list of device serial numbers in the group.
-  repeated string device_serials = 3;
+  // list of serial numbers in the group.
+  repeated string serial_numbers = 3;
   // list of users in the group.
   repeated User users = 4;
   // list of group ids that are children of this group.
@@ -179,11 +179,17 @@ message GetOwnershipVoucherResponse {
 
 service OwnershipVoucherService {
   // CreateGroup creates a group as a child of an existing group.
+  // A root group - named org_id - is precreated and all serials
+  // owner by the org are pre assigned to this group. Users move serials
+  // from the root group to user defined groups
   // Errors will be returned:
   // ALREADY_EXISTS if group already exists
   // PERMISSION_DENIED if the user doesn't have access to the parent group
   rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
-  // DeleteGroup deletes a named group.
+  // DeleteGroup deletes a named group. Any associated certs and serials
+  // must be deleted before the group can be deleted. Any children must be
+  // deleted before the group can be deleted i.e. any subtree has to be
+  // deleted in a bottom up manner
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist
   // FAILED_PRECONDITION if the parent is set but does not exist
@@ -211,6 +217,8 @@ service OwnershipVoucherService {
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
   // GetUserRole returns the roles the user is assigned in the group.
   // Username is unique to Org ID and Username.
+  // A user can only view roles of another user in the groups that
+  // it has a role assigned to
   // Errors will be returned:
   // NOT_FOUND if the group or the user doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
@@ -229,12 +237,13 @@ service OwnershipVoucherService {
   rpc RemoveSerial(RemoveSerialRequest) returns (RemoveSerialResponse);
   // GetSerial returns serial number, groups the serial belongs to.
   // Errors will be returned:
-  // NOT_FOUND if the serial number or group id doesn't exist.
+  // NOT_FOUND if the serial number doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
   rpc GetSerial(GetSerialRequest) returns (GetSerialResponse);
 
   // CreateDomainCert creates the certificate in the group.
   // Errors will be returned:
+  // INVALID_ARGUMENT if expiry_time is in the past
   // ALREADY_EXISTS if cert already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
   rpc CreateDomainCert(CreateDomainCertRequest) returns (CreateDomainCertResponse);
@@ -250,5 +259,7 @@ service OwnershipVoucherService {
 
   // GetOwnershipVoucher issues ownership voucher and returns TPM public 
   // key for the serial number (if it exists/if applicable)
+  // INVALID_ARGUMENT if lifetime is in the past and the IEN supplied
+  // does not belong to the serial number
   rpc GetOwnershipVoucher(GetOwnershipVoucherRequest) returns (GetOwnershipVoucherResponse);
 }
