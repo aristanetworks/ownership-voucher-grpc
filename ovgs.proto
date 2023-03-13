@@ -11,7 +11,7 @@ option go_package = "github.com/aristanetworks/ownership-voucher-grpc/ovgs";
 
 enum UserRole {
   USER_ROLE_UNSPECIFIED = 0;
-  USER_ROLE_SUPPORT = 1;      // Read write assocations and certs
+  USER_ROLE_SUPPORT = 1;      // Internal to the service
   USER_ROLE_ADMIN = 2;        // Read write to everything
   USER_ROLE_REQUESTOR = 3;    // Read only
 }
@@ -21,18 +21,28 @@ enum AccountType {
   ACCOUNT_TYPE_USER = 1;
   ACCOUNT_TYPE_SERVICE_ACCOUNT = 2;
 }
-  
+
+// Creation of user accounts and service accounts is external to the ovgs service.
+// Accounts may be created by any mechanism that a service implementor may offer.
+// This service only deals with the assignment of roles to these existing
+// user/service accounts.
 message User {
   // Username or Service Account name.
   string username = 1;     
   // User account type
   AccountType user_type = 2;  
-  // org_id = "org-" + org name.
+  // org_id = "org-" + org name. It is assigned by the service
+  // implementor (via whatever mechanism) and differentiates one org
+  // from another. A calling User will know their org_id.
   string org_id = 3;       
-  // Role of the user, either ADMIN, SUPPORT or REQUESTOR.
+  // Role of the user, either ADMIN or REQUESTOR.
   UserRole user_role = 4;  
 }
 
+// A root group with name - org_id already exists. All serial numbers owned by
+// this org are assigned to the root org and atleast one user/service account is
+// given ADMIN role over this root group, by default . This is used to bootstrap
+// the rest of the org tree.
 message CreateGroupRequest {
   // Parent group ID, it could be org ID or a group ID.
   string parent = 1;
@@ -202,23 +212,23 @@ service OwnershipVoucherService {
   // PERMISSION_DENIED if the user doesn't have access to the group
   rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
 
-  // AddUser will create and assign a role to a user in a named group.
-  // Username is unique to Org ID and Username.
+  // AddUser will assign a role to a user in a named group.
+  // Username is unique to an Org ID and Username.
   // Errors will be returned:
   // ALREADY_EXISTS if user already exists in the group with the role.
   // PERMISSION_DENIED if the user doesn't have access to the group.
   rpc AddUser(CreateUserRequest) returns (CreateUserResponse);
-  // DeleteUser removes user with the role from the named group.
-  // Username is unique to Org ID and Username.
+  // DeleteUser removes a role from a user in a named group.
+  // Username is unique to an Org ID and Username.
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist or if the user and role
   // doesn't exist in the group.
   // PERMISSION_DENIED if user doesn't have access to the group
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
   // GetUserRole returns the roles the user is assigned in the group.
-  // Username is unique to Org ID and Username.
+  // Username is unique to an Org ID and Username.
   // A user can only view roles of another user in the groups that
-  // it has a role assigned to
+  // it has a role assigned to.
   // Errors will be returned:
   // NOT_FOUND if the group or the user doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
