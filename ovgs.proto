@@ -22,17 +22,16 @@ enum AccountType {
   ACCOUNT_TYPE_SERVICE_ACCOUNT = 2;
 }
 
-// Creation of user accounts and service accounts is external to the ovgs service.
-// Accounts may be created by any mechanism that a service implementor may offer.
-// This service only deals with the assignment of roles to these existing
-// user/service accounts.
+// Creation of user accounts and service accounts (in a given org, denoted by
+// it's org_id) is external to the ovgs service. Accounts may be created by
+// any mechanism that a service implementor may offer. This service only deals
+// with the assignment of roles to these existing user/service accounts.
 message User {
   // Username or Service Account name.
   string username = 1;     
   // User account type
   AccountType user_type = 2;  
   // org_id = "org-" + org name. It is assigned by the service
-  // implementor (via whatever mechanism) and differentiates one org
   // from another. A calling User will know their org_id.
   string org_id = 3;       
   // Role of the user, either ADMIN or REQUESTOR.
