@@ -32,6 +32,7 @@ message User {
   // User account type
   AccountType user_type = 2;  
   // org_id = "org-" + org name. It is assigned by the service
+  // implementor (via some mechanism) and differentiates one org  
   // from another. A calling User will know their org_id.
   string org_id = 3;       
   // Role of the user, either ADMIN or REQUESTOR.
