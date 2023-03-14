@@ -87,25 +87,30 @@ message DeleteGroupResponse {
 //  ADMIN         |    ADMIN, ASSIGNER, REQUESTOR
 //  ASSIGNER      |    ASSIGNER, REQUESTOR
 //  REQUESTOR     |    NA (cannot assign roles)
-message CreateUserRoleRequest {
-  string username = 1;     // username or service account name
-  string user_type = 2;    // user account type
-  string org_id = 3;       // org_id = "org-" + org name
+message AddUserRoleRequest {
+  // username or service account name
+  string username = 1;     
+  // user account type
+  string user_type = 2;    
+  // org_id = "org-" + org name
+  string org_id = 3;       
+  // Group id to assign to the user.  Must be set.
   string group_id = 4;
-  UserRole user_role = 5;  // role of the user, one of ADMIN, ASSIGNER or REQUESTOR.
+  // role of the user, one of ADMIN, ASSIGNER or REQUESTOR.
+  UserRole user_role = 5;  
 }
 
-message CreateUserRoleResponse {
+message AddUserRoleResponse {
 }
 
-message DeleteUserRoleRequest {
+message RemoveUserRoleRequest {
   string username = 1;        // username or service account name
   AccountType user_type = 2;  // user account type
   string org_id = 3;          // org_id = "org-" + org name
   string group_id = 4;
 }
 
-message DeleteUserRoleResponse {
+message RemoveUserRoleResponse {
 }
 
 message GetUserRoleRequest {
@@ -209,7 +214,6 @@ service OwnershipVoucherService {
   // deleted in a bottom up manner
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist
-  // FAILED_PRECONDITION if the parent is set but does not exist
   // PERMISSION_DENIED if user doesn't have access to parent group
   rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse);
   // GetGroup returns the domain-certs (keyed by id), serials,
@@ -222,16 +226,17 @@ service OwnershipVoucherService {
   // AddUserRole will assign a role to a user in a named group.
   // Username is unique to an Org ID and Username.
   // Errors will be returned:
+  // FAILED_PRECONDITION if any of the paramters doesn't exist.
   // ALREADY_EXISTS if user already exists in the group with the role.
   // PERMISSION_DENIED if the user doesn't have access to the group.
-  rpc AddUserRole(CreateUserRoleRequest) returns (CreateUserRoleResponse);
-  // DeleteUserRole removes a role from a user in a named group.
+  rpc AddUserRole(AddUserRoleRequest) returns (AddUserRoleResponse);
+  // RemoveUserRole removes a role from a user in a named group.
   // Username is unique to an Org ID and Username.
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist or if the user and role
   // doesn't exist in the group.
   // PERMISSION_DENIED if user doesn't have access to the group
-  rpc DeleteUserRole(DeleteUserRoleRequest) returns (DeleteUserRoleResponse);
+  rpc RemoveUserRole(RemoveUserRoleRequest) returns (RemoveUserRoleResponse);
   // GetUserRole returns the roles the user is assigned in the group.
   // Username is unique to an Org ID and Username.
   // A user can only view roles of another user in the groups that
@@ -239,7 +244,7 @@ service OwnershipVoucherService {
   // Errors will be returned:
   // NOT_FOUND if the group or the user doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
-  rpc GetUserRole(RoleGetUserRoleRequest) returns (GetUserRoleResponse);
+  rpc GetUserRole(GetUserRoleRequest) returns (GetUserRoleResponse);
 
 
   // AddSerial assigns the serial to the group.
