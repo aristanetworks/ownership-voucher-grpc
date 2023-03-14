@@ -13,7 +13,8 @@ enum UserRole {
   USER_ROLE_UNSPECIFIED = 0;
   USER_ROLE_SUPPORT = 1;      // Internal to the service
   USER_ROLE_ADMIN = 2;        // Read write to everything
-  USER_ROLE_REQUESTOR = 3;    // Read only
+  USER_ROLE_ASSIGNER = 3;     // Read everything, write certs and serials
+  USER_ROLE_REQUESTOR = 4;    // Read only
 }
 
 enum AccountType {
@@ -31,11 +32,11 @@ message User {
   string username = 1;     
   // User account type
   AccountType user_type = 2;  
-  // org_id = "org-" + org name. It is assigned by the service
+  // org_id = "org-" + org name. org name is assigned by the service
   // implementor (via some mechanism) and differentiates one org  
   // from another. A calling User will know their org_id.
   string org_id = 3;       
-  // Role of the user, either ADMIN or REQUESTOR.
+  // Role of the user, one of ADMIN, ASSIGNER or REQUESTOR.
   UserRole user_role = 4;  
 }
 
@@ -80,34 +81,40 @@ message DeleteGroupRequest {
 message DeleteGroupResponse {
 }
 
-message CreateUserRequest {
+// A User can assign a role to another User only if it has a role with
+// equal or higher privileges. The follow assignments are possible -
+// Caller Role    |   Assignable Roles
+//  ADMIN         |    ADMIN, ASSIGNER, REQUESTOR
+//  ASSIGNER      |    ASSIGNER, REQUESTOR
+//  REQUESTOR     |    NA (cannot assign roles)
+message CreateUserRoleRequest {
   string username = 1;     // username or service account name
   string user_type = 2;    // user account type
   string org_id = 3;       // org_id = "org-" + org name
   string group_id = 4;
-  UserRole user_role = 5;  // role of the user, either ADMIN or REQUESTOR
+  UserRole user_role = 5;  // role of the user, one of ADMIN, ASSIGNER or REQUESTOR.
 }
 
-message CreateUserResponse {
+message CreateUserRoleResponse {
 }
 
-message DeleteUserRequest {
+message DeleteUserRoleRequest {
   string username = 1;        // username or service account name
   AccountType user_type = 2;  // user account type
   string org_id = 3;          // org_id = "org-" + org name
   string group_id = 4;
 }
 
-message DeleteUserResponse {
+message DeleteUserRoleResponse {
 }
 
-message GetUserRequest {
+message GetUserRoleRequest {
   string username = 1;     // username or service account name
   string user_type = 2;    // user role type
   string org_id = 3;       // org_id = "org-" + org name
 }
 
-message GetUserResponse {
+message GetUserRoleResponse {
   // mapping from a group to user's role in that group
   map<string, UserRole> groups = 1;
 }
@@ -212,19 +219,19 @@ service OwnershipVoucherService {
   // PERMISSION_DENIED if the user doesn't have access to the group
   rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
 
-  // AddUser will assign a role to a user in a named group.
+  // AddUserRole will assign a role to a user in a named group.
   // Username is unique to an Org ID and Username.
   // Errors will be returned:
   // ALREADY_EXISTS if user already exists in the group with the role.
   // PERMISSION_DENIED if the user doesn't have access to the group.
-  rpc AddUser(CreateUserRequest) returns (CreateUserResponse);
-  // DeleteUser removes a role from a user in a named group.
+  rpc AddUserRole(CreateUserRoleRequest) returns (CreateUserRoleResponse);
+  // DeleteUserRole removes a role from a user in a named group.
   // Username is unique to an Org ID and Username.
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist or if the user and role
   // doesn't exist in the group.
   // PERMISSION_DENIED if user doesn't have access to the group
-  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc DeleteUserRole(DeleteUserRoleRequest) returns (DeleteUserRoleResponse);
   // GetUserRole returns the roles the user is assigned in the group.
   // Username is unique to an Org ID and Username.
   // A user can only view roles of another user in the groups that
@@ -232,7 +239,7 @@ service OwnershipVoucherService {
   // Errors will be returned:
   // NOT_FOUND if the group or the user doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
-  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc GetUserRole(RoleGetUserRoleRequest) returns (GetUserRoleResponse);
 
 
   // AddSerial assigns the serial to the group.
