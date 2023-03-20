@@ -9,12 +9,15 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/aristanetworks/ownership-voucher-grpc/ovgs";
 
-// The primary construct that OVGS defines is a heirarchy of 'groups'. Groups are
-// identified by a group_id (allocated by the server). Each group can have several
-// child groups; Pinned Domain Certs are associated to a group,serial numbers can
-// be assigned to a group. Groups are created by users (except the root group, more
-// on this later) and roles are assigned to users (limiting the set of operations a user
-// can invoke) per group level. Permissions accorded by these roles are heirarchical.
+// The OVGS service defines a heirarchy of 'groups', which are identified by a
+// group_id (allocated by the server). Each group can have several  child groups;
+// Pinned Domain Certs are associated to a group, serial numbers can be assigned to a
+// group (which serves to limit the set of Users who can issue vouchers for those
+// serial numbers to Users who have the necessary permissions in that group)
+// Groups are created by users (except the root group, more on this later) and roles
+// are assigned to users (limiting the set of operations a user can invoke) per group.
+// Any permissions accorded by these roles on a group are heirarchical in nature.
+
 // Note that the creation of a User is external to the ovgs service. Users may be
 // created by any mechanism that the service implementor may offer. It is assumed
 // that all such Users are known to ovgs, which only deals with the assignment of
