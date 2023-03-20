@@ -232,6 +232,7 @@ service OwnershipVoucherService {
   // Errors will be returned:
   // ALREADY_EXISTS if group already exists
   // PERMISSION_DENIED if the user doesn't have access to the parent group
+  // Roles with permission to invoke this = ADMIN
   rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
   // DeleteGroup deletes a named group. Any associated certs and serials
   // must be deleted before the group can be deleted. Any children must be
@@ -240,12 +241,14 @@ service OwnershipVoucherService {
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist
   // PERMISSION_DENIED if user doesn't have access to parent group
+  // Roles with permission to invoke this = ADMIN
   rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse);
   // GetGroup returns the domain-certs (keyed by id), serials,
   // and user/role mappings for that group and the children group ids.
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist
   // PERMISSION_DENIED if the user doesn't have access to the group
+  // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
 
   // AddUserRole will assign a role to a user in a named group.
@@ -254,6 +257,7 @@ service OwnershipVoucherService {
   // FAILED_PRECONDITION if any of the paramters doesn't exist.
   // ALREADY_EXISTS if user already exists in the group with the role.
   // PERMISSION_DENIED if the user doesn't have access to the group.
+  // Roles with permission to invoke this = ADMIN
   rpc AddUserRole(AddUserRoleRequest) returns (AddUserRoleResponse);
   // RemoveUserRole removes a role from a user in a named group.
   // Username is unique to an Org ID and Username.
@@ -261,6 +265,7 @@ service OwnershipVoucherService {
   // NOT_FOUND if the group doesn't exist or if the user and role
   // doesn't exist in the group.
   // PERMISSION_DENIED if user doesn't have access to the group
+  // Roles with permission to invoke this = ADMIN
   rpc RemoveUserRole(RemoveUserRoleRequest) returns (RemoveUserRoleResponse);
   // GetUserRole returns the roles the user is assigned in the group.
   // Username is unique to an Org ID and Username.
@@ -269,6 +274,7 @@ service OwnershipVoucherService {
   // Errors will be returned:
   // NOT_FOUND if the group or the user doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
+  // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetUserRole(GetUserRoleRequest) returns (GetUserRoleResponse);
 
 
@@ -276,16 +282,19 @@ service OwnershipVoucherService {
   // Errors will be returned:
   // ALREADY_EXISTS if serial_number already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
+  // Roles with permission to invoke this = ADMIN, ASSIGNER
   rpc AddSerial(AddSerialRequest) returns (AddSerialResponse);
   // RemoveSerial removes the serial from the group.
   // Errors will be returned:
   // NOT_FOUND if the serial number or group id doesn't exist
   // PERMISSION_DENIED if user doesn't have access to the group
+  // Roles with permission to invoke this = ADMIN, ASSIGNER
   rpc RemoveSerial(RemoveSerialRequest) returns (RemoveSerialResponse);
   // GetSerial returns serial number, groups the serial belongs to.
   // Errors will be returned:
   // NOT_FOUND if the serial number doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
+  // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetSerial(GetSerialRequest) returns (GetSerialResponse);
 
   // CreateDomainCert creates the certificate in the group.
@@ -293,15 +302,18 @@ service OwnershipVoucherService {
   // INVALID_ARGUMENT if expiry_time is in the past
   // ALREADY_EXISTS if cert already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
+  // Roles with permission to invoke this = ADMIN, ASSIGNER
   rpc CreateDomainCert(CreateDomainCertRequest) returns (CreateDomainCertResponse);
   // DeleteDomainCert deletes the cert from the database.
   // Errors will be returned:
   // NOT_FOUND if the cert doesn't exist
   // PERMISSION_DENIED if user doesn't have access to the group
+  // Roles with permission to invoke this = ADMIN, ASSIGNER
   rpc DeleteDomainCert(DeleteDomainCertRequest) returns (DeleteDomainCertResponse);
   // GetDomainCert reveals the details of the certificate.
   // NOT_FOUND if the cert doesn't exist
   // PERMISSION_DENIED if user doesn't have access to the group
+  // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetDomainCert(GetDomainCertRequest) returns (GetDomainCertResponse);
 
   // GetOwnershipVoucher issues ownership voucher and returns TPM public 
@@ -309,5 +321,6 @@ service OwnershipVoucherService {
   // Errors will be returned:
   // INVALID_ARGUMENT if lifetime is in the past and the IEN supplied
   // does not belong to the serial number
+  // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetOwnershipVoucher(GetOwnershipVoucherRequest) returns (GetOwnershipVoucherResponse);
 }
