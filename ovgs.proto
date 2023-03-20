@@ -31,10 +31,14 @@ option go_package = "github.com/aristanetworks/ownership-voucher-grpc/ovgs";
 
 enum UserRole {
   USER_ROLE_UNSPECIFIED = 0;
-  USER_ROLE_SUPPORT = 1;      // Internal to the service
-  USER_ROLE_ADMIN = 2;        // Read write to everything
-  USER_ROLE_ASSIGNER = 3;     // Read everything, write certs and serials
-  USER_ROLE_REQUESTOR = 4;    // Read only
+  // Internal to the service
+  USER_ROLE_SUPPORT = 1;
+  // Read write to everything
+  USER_ROLE_ADMIN = 2;
+  // Read everything, write certs and serials
+  USER_ROLE_ASSIGNER = 3;
+  // Read only
+  USER_ROLE_REQUESTOR = 4;
 }
 
 enum AccountType {
@@ -43,7 +47,7 @@ enum AccountType {
   ACCOUNT_TYPE_SERVICE_ACCOUNT = 2;
 }
 
-// Uuser/service account are assumed to have been created by some mechanism outside of
+// User/service accounts are assumed to have been created by some mechanism outside of
 // ovgs, but are known to it. This service only deals with the assignment of roles to
 // these existing user/service accounts.
 message User {
@@ -120,9 +124,12 @@ message AddUserRoleResponse {
 }
 
 message RemoveUserRoleRequest {
-  string username = 1;        // username or service account name
-  AccountType user_type = 2;  // user account type
-  string org_id = 3;          // org_id = "org-" + org name
+  // username or service account name
+  string username = 1;
+  // user account type
+  AccountType user_type = 2;
+  // org_id = "org-" + org name
+  string org_id = 3;
   string group_id = 4;
 }
 
@@ -130,9 +137,12 @@ message RemoveUserRoleResponse {
 }
 
 message GetUserRoleRequest {
-  string username = 1;     // username or service account name
-  string user_type = 2;    // user role type
-  string org_id = 3;       // org_id = "org-" + org name
+  // username or service account name
+  string username = 1;
+  // user role type
+  string user_type = 2;
+  // org_id = "org-" + org name
+  string org_id = 3;
 }
 
 message GetUserRoleResponse {
@@ -211,8 +221,10 @@ message GetOwnershipVoucherRequest {
 }
 
 message GetOwnershipVoucherResponse {
-  bytes voucher_cms = 1; // binary CMS format (rfc5652)
-  bytes public_key_der = 2; // ASN.1 DER encoded
+  // binary CMS format (rfc5652)
+  bytes voucher_cms = 1;
+  // ASN.1 DER encoded
+  bytes public_key_der = 2;
 }
 
 service OwnershipVoucherService {
