@@ -111,7 +111,7 @@ message AddUserRoleRequest {
   // username or service account name
   string username = 1;     
   // user account type
-  string user_type = 2;    
+  AccountType user_type = 2;
   // org_id = "org-" + org name
   string org_id = 3;       
   // Group id to assign to the user.  Must be set.
@@ -140,7 +140,7 @@ message GetUserRoleRequest {
   // username or service account name
   string username = 1;
   // user role type
-  string user_type = 2;
+  AccountType user_type = 2;
   // org_id = "org-" + org name
   string org_id = 3;
 }
