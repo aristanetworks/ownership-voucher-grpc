@@ -9,6 +9,23 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/aristanetworks/ownership-voucher-grpc/ovgs";
 
+// The primary construct that OVGS defines is a heirarchy of 'groups'. Groups are
+// identified by a group_id (allocated by the server). Each group can have several
+// child groups; Pinned Domain Certs are associated to a group,serial numbers can
+// be assigned to a group. Groups are created by users (except the root group, more
+// on this later) and roles are assigned to users (limiting the set of operations a user
+// can invoke) per group level. Permissions accorded by these roles are heirarchical.
+// Note that the creation of a User is external to the ovgs service. Users may be
+// created by any mechanism that the service implementor may offer. It is assumed
+// that all such Users are known to ovgs, which only deals with the assignment of
+// roles to them.
+// Root group - Each customer/org is assigned a name. The org_id can be constructed
+// as "org-" + org name. A root group with org_id as the is precreated and all
+// serial numbers owned by the org are added to this root group. Moreover, an initial
+// User is given ADMIN role over this root group as part of the setup, which can then
+// be used to bootstrap the rest of the org tree - add more users, create child groups,
+// assign serials to them, add certs and finally, issue vouchers for a serial number.
+
 enum UserRole {
   USER_ROLE_UNSPECIFIED = 0;
   USER_ROLE_SUPPORT = 1;      // Internal to the service
@@ -23,27 +40,21 @@ enum AccountType {
   ACCOUNT_TYPE_SERVICE_ACCOUNT = 2;
 }
 
-// Creation of user accounts and service accounts (in a given org, denoted by
-// it's org_id) is external to the ovgs service. Accounts may be created by
-// any mechanism that a service implementor may offer. This service only deals
-// with the assignment of roles to these existing user/service accounts.
+// Uuser/service account are assumed to have been created by some mechanism outside of
+// ovgs, but are known to it. This service only deals with the assignment of roles to
+// these existing user/service accounts.
 message User {
   // Username or Service Account name.
   string username = 1;     
   // User account type
   AccountType user_type = 2;  
-  // org_id = "org-" + org name. org name is assigned by the service
-  // implementor (via some mechanism) and differentiates one org  
-  // from another. A calling User will know their org_id.
+  // org_id = "org-" + org name. A calling User will know their org_id.
   string org_id = 3;       
   // Role of the user, one of ADMIN, ASSIGNER or REQUESTOR.
   UserRole user_role = 4;  
 }
 
-// A root group with name - org_id already exists. All serial numbers owned by
-// this org are assigned to the root org and atleast one user/service account is
-// given ADMIN role over this root group, by default . This is used to bootstrap
-// the rest of the org tree.
+// The group heirarchy is rooted at the root group (group_id = org_id)
 message CreateGroupRequest {
   // Parent group ID, it could be org ID or a group ID.
   string parent = 1;
@@ -81,6 +92,8 @@ message DeleteGroupRequest {
 message DeleteGroupResponse {
 }
 
+// Roles are assigned to users in the context of a group, giving them
+// certain permissions (as defined by that role) within the group.
 // A User can assign a role to another User only if it has a role with
 // equal or higher privileges. The follow assignments are possible -
 // Caller Role    |   Assignable Roles
@@ -201,16 +214,13 @@ message GetOwnershipVoucherResponse {
 
 service OwnershipVoucherService {
   // CreateGroup creates a group as a child of an existing group.
-  // A root group - named org_id - is precreated and all serials
-  // owner by the org are pre assigned to this group. Users move serials
-  // from the root group to user defined groups
   // Errors will be returned:
   // ALREADY_EXISTS if group already exists
   // PERMISSION_DENIED if the user doesn't have access to the parent group
   rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
   // DeleteGroup deletes a named group. Any associated certs and serials
   // must be deleted before the group can be deleted. Any children must be
-  // deleted before the group can be deleted i.e. any subtree has to be
+  // deleted before the group can be deleted i.e. a subtree has to be
   // deleted in a bottom up manner
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist
