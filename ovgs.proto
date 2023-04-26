@@ -230,7 +230,7 @@ message GetOwnershipVoucherResponse {
 service OwnershipVoucherService {
   // CreateGroup creates a group as a child of an existing group.
   // Errors will be returned:
-  // ALREADY_EXISTS if group already exists
+  // NOT_FOUND if the parent group doesn't exist, as specified in request
   // PERMISSION_DENIED if the user doesn't have access to the parent group
   // Roles with permission to invoke this = ADMIN
   rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
@@ -254,8 +254,9 @@ service OwnershipVoucherService {
   // AddUserRole will assign a role to a user in a named group.
   // Username is unique to an Org ID and Username.
   // Errors will be returned:
+  // NOT_FOUND if the group doesn't exist, as specified in the request
   // FAILED_PRECONDITION if any of the paramters doesn't exist.
-  // ALREADY_EXISTS if user already exists in the group with the role.
+  // ALREADY_EXISTS if user already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group.
   // Roles with permission to invoke this = ADMIN
   rpc AddUserRole(AddUserRoleRequest) returns (AddUserRoleResponse);
@@ -273,13 +274,13 @@ service OwnershipVoucherService {
   // it has a role assigned to.
   // Errors will be returned:
   // NOT_FOUND if the group or the user doesn't exist.
-  // PERMISSION_DENIED if the user doesn't have access to the group
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetUserRole(GetUserRoleRequest) returns (GetUserRoleResponse);
 
 
   // AddSerial assigns the serial to the group.
   // Errors will be returned:
+  // NOT_FOUND if the serial number or group id doesn't exist
   // ALREADY_EXISTS if serial_number already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
   // Roles with permission to invoke this = ADMIN, ASSIGNER
@@ -299,6 +300,7 @@ service OwnershipVoucherService {
 
   // CreateDomainCert creates the certificate in the group.
   // Errors will be returned:
+  // NOT_FOUND if the group doesn't exist, as specified in the request
   // INVALID_ARGUMENT if expiry_time is in the past
   // ALREADY_EXISTS if cert already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
