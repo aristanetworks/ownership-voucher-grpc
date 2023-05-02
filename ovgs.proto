@@ -230,7 +230,8 @@ message GetOwnershipVoucherResponse {
 service OwnershipVoucherService {
   // CreateGroup creates a group as a child of an existing group.
   // Errors will be returned:
-  // ALREADY_EXISTS if group already exists
+  // INVALID_ARGUMENT if the description is empty
+  // NOT_FOUND if the parent group doesn't exist, as specified in request
   // PERMISSION_DENIED if the user doesn't have access to the parent group
   // Roles with permission to invoke this = ADMIN
   rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
@@ -239,6 +240,8 @@ service OwnershipVoucherService {
   // deleted before the group can be deleted i.e. a subtree has to be
   // deleted in a bottom up manner
   // Errors will be returned:
+  // INVALID_ARGUMENT if group_id = root group (the precreated root group
+  // cannot be deleted)
   // NOT_FOUND if the group doesn't exist
   // PERMISSION_DENIED if user doesn't have access to parent group
   // Roles with permission to invoke this = ADMIN
@@ -254,14 +257,17 @@ service OwnershipVoucherService {
   // AddUserRole will assign a role to a user in a named group.
   // Username is unique to an Org ID and Username.
   // Errors will be returned:
+  // INVALID_ARGUMENT if the username is empty
+  // NOT_FOUND if the group doesn't exist, as specified in the request
   // FAILED_PRECONDITION if any of the paramters doesn't exist.
-  // ALREADY_EXISTS if user already exists in the group with the role.
+  // ALREADY_EXISTS if user already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group.
   // Roles with permission to invoke this = ADMIN
   rpc AddUserRole(AddUserRoleRequest) returns (AddUserRoleResponse);
   // RemoveUserRole removes a role from a user in a named group.
   // Username is unique to an Org ID and Username.
   // Errors will be returned:
+  // INVALID_ARGUMENT if the username is empty
   // NOT_FOUND if the group doesn't exist or if the user and role
   // doesn't exist in the group.
   // PERMISSION_DENIED if user doesn't have access to the group
@@ -272,26 +278,30 @@ service OwnershipVoucherService {
   // A user can only view roles of another user in the groups that
   // it has a role assigned to.
   // Errors will be returned:
+  // INVALID_ARGUMENT if the username is empty
   // NOT_FOUND if the group or the user doesn't exist.
-  // PERMISSION_DENIED if the user doesn't have access to the group
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetUserRole(GetUserRoleRequest) returns (GetUserRoleResponse);
 
 
   // AddSerial assigns the serial to the group.
   // Errors will be returned:
+  // INVALID_ARGUMENT if the serial number is empty
+  // NOT_FOUND if the serial number or group id doesn't exist
   // ALREADY_EXISTS if serial_number already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
   // Roles with permission to invoke this = ADMIN, ASSIGNER
   rpc AddSerial(AddSerialRequest) returns (AddSerialResponse);
   // RemoveSerial removes the serial from the group.
   // Errors will be returned:
+  // INVALID_ARGUMENT if the serial number is empty
   // NOT_FOUND if the serial number or group id doesn't exist
   // PERMISSION_DENIED if user doesn't have access to the group
   // Roles with permission to invoke this = ADMIN, ASSIGNER
   rpc RemoveSerial(RemoveSerialRequest) returns (RemoveSerialResponse);
   // GetSerial returns serial number, groups the serial belongs to.
   // Errors will be returned:
+  // INVALID_ARGUMENT if the serial number is empty
   // NOT_FOUND if the serial number doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
@@ -299,7 +309,9 @@ service OwnershipVoucherService {
 
   // CreateDomainCert creates the certificate in the group.
   // Errors will be returned:
-  // INVALID_ARGUMENT if expiry_time is in the past
+  // NOT_FOUND if the group doesn't exist, as specified in the request
+  // INVALID_ARGUMENT if expiry_time is empty or in the past or the
+  // suuplied cert is invalid
   // ALREADY_EXISTS if cert already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
   // Roles with permission to invoke this = ADMIN, ASSIGNER
@@ -319,8 +331,8 @@ service OwnershipVoucherService {
   // GetOwnershipVoucher issues ownership voucher and returns TPM public 
   // key for the serial number (if it exists/if applicable)
   // Errors will be returned:
-  // INVALID_ARGUMENT if lifetime is in the past and the IEN supplied
-  // does not belong to the serial number
+  // INVALID_ARGUMENT if serial number, IEN or lifetime is empty, lifetime is in the past
+  // or the IEN supplied isn't applicable for the voucher issuer
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetOwnershipVoucher(GetOwnershipVoucherRequest) returns (GetOwnershipVoucherResponse);
 }
