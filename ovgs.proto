@@ -61,6 +61,13 @@ message User {
   UserRole user_role = 4;  
 }
 
+// A component uniquely identifies a part for which a voucher can be issued
+message Component {
+   // ien is the vendor's IANA Enterprise Number. 30065 is Arista Networks's ien.
+    string ien = 1;
+    string serial_number = 2;
+}
+
 // The group heirarchy is rooted at the root group (group_id = org_id)
 message CreateGroupRequest {
   // Parent group ID, it could be org ID or a group ID.
@@ -82,8 +89,8 @@ message GetGroupResponse {
   string group_id = 1;
   // list of certificate ids associated with the group.
   repeated string cert_ids = 2;
-  // list of serial numbers in the group.
-  repeated string serial_numbers = 3;
+  // list of components in the group.
+  repeated Component components = 3;
   // list of users in the group.
   repeated User users = 4;
   // list of group ids that are children of this group.
@@ -181,7 +188,7 @@ message DeleteDomainCertResponse {
 }
 
 message AddSerialRequest {
-  string serial_number = 1;
+  Component component = 1;
   string group_id = 2;
 }
 
@@ -189,7 +196,7 @@ message AddSerialResponse {
 }
 
 message RemoveSerialRequest {
-  string serial_number = 1;
+  Component component = 1;
   string group_id = 2;
 }
 
@@ -197,7 +204,7 @@ message RemoveSerialResponse {
 }
 
 message GetSerialRequest {
-  string serial_number = 1;
+  Component component = 1;
 }
 
 message GetSerialResponse {
@@ -211,13 +218,11 @@ message GetSerialResponse {
 
 message GetOwnershipVoucherRequest {
   // Serial number for the part to fetch OV.
-  string serial_number = 1;
+  Component component = 1;
   // Certificate ID to use for OV.
   string cert_id = 2;
   // Lifetime of the OV.
   google.protobuf.Timestamp lifetime = 3;
-  // ien is the device vendor's IANA Enterprise Number.
-  string ien = 4;
 }
 
 message GetOwnershipVoucherResponse {
@@ -286,7 +291,8 @@ service OwnershipVoucherService {
 
   // AddSerial assigns the serial to the group.
   // Errors will be returned:
-  // INVALID_ARGUMENT if the serial number is empty
+  // INVALID_ARGUMENT if the serial number is empty or the IEN supplied
+  // isn't applicable f the voucher issuer
   // NOT_FOUND if the serial number or group id doesn't exist
   // ALREADY_EXISTS if serial_number already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
@@ -294,14 +300,16 @@ service OwnershipVoucherService {
   rpc AddSerial(AddSerialRequest) returns (AddSerialResponse);
   // RemoveSerial removes the serial from the group.
   // Errors will be returned:
-  // INVALID_ARGUMENT if the serial number is empty
+  // INVALID_ARGUMENT if the serial number is empty or the IEN supplied
+  // isn't applicable for the voucher issuer
   // NOT_FOUND if the serial number or group id doesn't exist
   // PERMISSION_DENIED if user doesn't have access to the group
   // Roles with permission to invoke this = ADMIN, ASSIGNER
   rpc RemoveSerial(RemoveSerialRequest) returns (RemoveSerialResponse);
   // GetSerial returns serial number, groups the serial belongs to.
   // Errors will be returned:
-  // INVALID_ARGUMENT if the serial number is empty
+  // INVALID_ARGUMENT if the serial number is empty or the IEN supplied
+  // isn't applicable for the voucher issuer
   // NOT_FOUND if the serial number doesn't exist.
   // PERMISSION_DENIED if the user doesn't have access to the group
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
