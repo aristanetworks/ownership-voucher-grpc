@@ -446,7 +446,7 @@ ien = 30065
 
 #### Example Response
 
-````text
+```text
 voucher_cms = <voucher, example below>
 public_key_der = <switch TPM public key, ASN.1 der encoded, example below>
 ```
