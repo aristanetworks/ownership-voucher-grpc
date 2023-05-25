@@ -211,14 +211,14 @@ The examples below assume that the org is AcmeCo with org ID org-acmeco.
 
 #### Example Request
 
-```javascript
+```text
 parent = org-acmeco
 description = acmeco-bu
 ```
 
 #### Example Response
 
-```javascript
+```text
 group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 ```
 
@@ -231,13 +231,13 @@ group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 
 #### Example Request
 
-```javascript
+```text
 group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 ```
 
 #### Example Response
 
-```javascript
+```text
 Group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 cert_ids = [cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b, ]
 serial_numbers = [JPEXXXX076]
@@ -253,7 +253,7 @@ users = [{username = useracm, user_type = USER, org_id = org-acmeco, user_role =
 
 #### Example Request
 
-```javascript
+```text
 group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 ```
 
@@ -265,7 +265,7 @@ group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 
 #### Example Request
 
-```javascript
+```text
 username = useracm
 user_type = USER
 org_id = org-acmeco
@@ -282,7 +282,7 @@ user_role = USER_ROLE_REQUESTOR
 
 #### Example Request
 
-```javascript
+```text
 username = useracm
 user_type = USER
 org_id = org-acmeco
@@ -299,7 +299,7 @@ group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 
 #### Example Request
 
-```javascript
+```text
 username = useracm
 user_type = user
 org_id = org-acmeco
@@ -307,8 +307,8 @@ org_id = org-acmeco
 
 #### Example Response
 
-```javascript
-groups = [{ group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2 → ADMIN}]
+```text
+groups = [{ group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2 = ADMIN}]
 ```
 
 ### /CreateDomainCert
@@ -322,7 +322,7 @@ groups = [{ group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2 → ADMIN}]
 
 #### Example Request
 
-```javascript
+```text
 group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 certificate_der = <x509 cert ASN.1 der encoded>
 revocation_checks = true
@@ -331,7 +331,7 @@ expiry_time = 2023-02-25T00:00:00.000Z
 
 #### Example Response
 
-```javascript
+```text
 cert_id = cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b
 ```
 
@@ -347,13 +347,13 @@ cert_id = cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b
 
 #### Example Request
 
-```javascript
+```text
 cert_id = cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b
 ```
 
 #### Example Response
 
-```javascript
+```text
 group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 certificate_der = <x509 ASN.1 der encoded>
 revocation_checks = true
@@ -368,7 +368,7 @@ expiry_time = 2023-02-25T00:00:00.000Z
 
 #### Example Request
 
-```javascript
+```text
 cert_id = cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b
 ```
 
@@ -380,7 +380,7 @@ cert_id = cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b
 
 #### Example Request
 
-```javascript
+```text
 serial_number = JPEXXXX1076
 group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 ```
@@ -393,7 +393,7 @@ group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 
 #### Example Request
 
-```javascript
+```text
 serial_number = JPEXXXX1076
 group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 ```
@@ -406,13 +406,13 @@ group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 
 #### Example Request
 
-```javascript
+```text
 serial_serial = JPEXXXX1076
 ```
 
 #### Example Response
 
-```javascript
+```text
 public_key_der = <TPM public key, ASN.1 der encoded (if applicable for this part), example below>
 group_ids = [group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2]
 mac_addr = 00:00:5e:00:53:af
@@ -437,7 +437,7 @@ mac_addr = 00:00:5e:00:53:af
 
 #### Example Request
 
-```javascript
+```text
 serial_number = JPE29451076
 cert_id = cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b
 lifetime = 2023-02-25T00:00:00.000Z
@@ -446,7 +446,7 @@ ien = 30065
 
 #### Example Response
 
-````javascript
+````text
 voucher_cms = <voucher, example below>
 public_key_der = <switch TPM public key, ASN.1 der encoded, example below>
 ```
@@ -543,7 +543,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" \
 
 #### Response
 
-```javascript
+```text
 {"group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab"}
 ```
 
@@ -571,7 +571,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" \
 
 #### Response
 
-```javascript
+```text
 {}
 ```
 
@@ -600,7 +600,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" \
 
 #### Response
 
-```javascript
+```text
 {}
 ```
 
@@ -645,7 +645,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" \
   www.a-network-vendor.io:443 ovgs.v1.OwnershipVoucherService/GetUserRole
 ```
 
-```javascript
+```text
 {"groups": {"org-acmeco": "ADMIN"}}
 ```
 
@@ -658,7 +658,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto \
  www.a-network-vendor.io:443 ovgs.v1.OwnershipVoucherService/GetUserRole
 ```
 
-```javascript
+```text
 {}
 ```
 
@@ -671,7 +671,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" \
   www.a-network-vendor.io:443 ovgs.v1.OwnershipVoucherService/CreateDomainCert
 ```
 
-```javascript
+```text
 {"cert_id": "cert-29466354-a669-4c47-91cf-f214c03626db"}
 ```
 
@@ -685,7 +685,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto -d '{"cert_i
 
 #### Response
 
-```javascript
+```text
 {
   "group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab",
   "certificate_der": "MIIHRzCCBi+gAwIB...I6dj87VD+laMUBd7HBtOEGsiDoRSlA==",
@@ -708,7 +708,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto
 
 #### Response
 
-```javascript
+```text
 {
   "serial_numbers": [ "ABC101", "ABC102" ],
   "users": [{
@@ -738,7 +738,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto \
 
 #### Response
 
-```javascript
+```text
 {}
 ```
 
@@ -753,7 +753,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto \
 
 #### Response
 
-```javascript
+```text
 {
   "public_key_der": "MIIBIjANBgkqhkiG9w0BA...A4M3QIDAQAB",
   "group_ids": [ "group-3e7e2431-6c73-423b-91ef-b734a13daaab", "org-acmeco" ],
@@ -773,7 +773,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto \
 
 #### Response
 
-```javascript
+```text
 {
   "cert_ids": [ "cert-29466354-a669-4c47-91cf-f214c03626db" ],
   "serial_numbers": [ "ABC101" ],
@@ -803,7 +803,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto \
 
 #### Response
 
-```javascript
+```text
 { "voucher_cms": "MIIeYAYJKoZI...XyC/dx8DbRGBWKK/pcGG+U50PRt86Q==",
     "public_key_der": "MIIBIjANBg...BVdgA4M3QIDAQAB" }
 ```
@@ -823,7 +823,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto \
 
 #### Response
 
-```javascript
+```text
 {}
 ```
 
@@ -843,7 +843,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto
 
 #### Response
 
-```javascript
+```text
 {}
 ```
 
@@ -858,7 +858,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto \
 
 #### Response
 
-```javascript
+```text
 {}
 ```
 
@@ -876,7 +876,7 @@ $ grpcurl -H "Cookie: access_token=$ACCESS_TOKEN" -proto ovgs.proto \
 
 #### Response
 
-```javascript
+```text
 {}
 ```
 
@@ -890,7 +890,7 @@ More details are available at [RFC8366 Section-5.3](https://tools.ietf.org/html/
   using the base64 encoding
 - domain-cert-revocation-checks is going to be a boolean value
 
-```javascript
+```text
 {
   "ietf-voucher:voucher": {
         "created-on": "2023302-11T13:45:31.69401473+05:30",
