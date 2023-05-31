@@ -29,7 +29,7 @@ flowchart TB
 
     topGroup("Group: Default
     Group ID: group-e51b5c2c-eda1-4c27-8a86-ece7faab33f
-    Domain Certs = [&lt;x509 domain cert 1&gt;, &lt;x509 domain cert 2&gt;>]
+    Domain Certs = [&lt;x509 domain cert 1&gt;, &lt;x509 domain cert 2&gt;]
     Switch Serials = [JGEXXXXXX]
     Users = [{username = useracm, role = requestor}]")
 
@@ -473,10 +473,10 @@ tenant is created for an operator. For example, this node is set up for the
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart TB
 
-    orgBlock("`org_id: org-acmeco
+    orgBlock("org_id: org-acmeco
 users = [{username = admin, user_type = user, user_role = admin}]
 switch_serials = [ABC101, ABC102]
-`")
+")
 
 orgBlock
 ```
@@ -524,13 +524,13 @@ required later.
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart TB
 
-    orgBlock("`org_id: org-acmeco
+    orgBlock("org_id: org-acmeco
 users = [{username = admin, user_type = user, user_role = admin}]
 switch_serials = [ABC101, ABC102]
-`")
-    defaultGroup("`Group Name: default
+")
+    defaultGroup("Group Name: default
 group_id: group-3e7e2431-6c73-423b-91ef-b734a13daaab
-`")
+")
 orgBlock --> defaultGroup
 ```
 
@@ -617,21 +617,23 @@ Let’s also create a service account srv-admin-on-default and add it to the
 %%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart TB
 
-    orgBlock("`
+    orgBlock("
     org_id: org-acmeco
     users = [
-    {username: admin, user_type: user, user_role: admin},
-    {username: srv\-admin, user_type: account, user_role: admin}]
+      {username: admin, user_type: user, user_role: admin},
+      {username: srv-admin, user_type: account, user_role: admin}
+    ]
     switch_serials = [ABC101, ABC102]
-    `")
+    ")
 
-    defaultGroup("`
+    defaultGroup("
     Group Name: default
     group_id: group-3e7e2431-6c73-423b-91ef-b734a13daaab
     users = [
         {username: user-admin-on-default, user_type: user, user_role: admin},
-        {username: srv-admin-on-default, user_type: account, user_role: admin}]
-    `")
+        {username: srv-admin-on-default, user_type: account, user_role: admin}
+      ]
+    ")
 
     orgBlock --> defaultGroup
 ```
