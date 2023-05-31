@@ -29,7 +29,7 @@ flowchart TB
 
     topGroup("Group: Default
     Group ID: group-e51b5c2c-eda1-4c27-8a86-ece7faab33f
-    Domain Certs = [\<x509 domain cert 1\>, \<x509 domain cert 2\>]
+    Domain Certs = [&lt;x509 domain cert 1&gt;, &lt;x509 domain cert 2&gt;>]
     Switch Serials = [JGEXXXXXX]
     Users = [{username = useracm, role = requestor}]")
 
