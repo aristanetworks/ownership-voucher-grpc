@@ -423,8 +423,8 @@ mac_addr = 00:00:5e:00:53:af
 - **Endpoint:** `/GetOwnershipVoucher`
 - **Minimum Role Needed:** requestor
 - **Endpoint Action:** Given a serial number, domain cert id, ien (IANA
-  Enterprise Number of the device vendor, 30065 is arista’s IEN) and OV lifetime
-  this endpoint will do the following:
+  Enterprise Number of the device vendor, e.g., 30065 is arista’s IEN) and OV
+  lifetime this endpoint will do the following:
 
   - Verify that the requestor has access to the device with the serial number.
   - Verify that the requested lifetime in not in the past and is within the cert
@@ -495,7 +495,7 @@ refresher on JSON Mapping may be helpful when trying out the examples.
 ### Getting the Protobuf File
 
 The protobuf file can be found in the following github repository:
-<https://github.com/aristanetworks/ownership-voucher-grpc/>
+<https://github.com/openconfig/ovgs/>
 
 ## User Workflow
 
@@ -536,9 +536,11 @@ orgBlock --> defaultGroup
 
 ```shell
 $ ACCESS_TOKEN=<token of admin>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
-  -proto ovgs.proto -d '{"parent": "org-acmeco", "description": "default"}' \
-  www.a-network-vendor.io:443 ovgs.v1.OwnershipVoucherService/CreateGroup
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"         \
+    -proto ovgs.proto                                       \
+    -d '{"parent": "org-acmeco", "description": "default"}' \
+    www.a-network-vendor.io:443                             \
+    ovgs.v1.OwnershipVoucherService/CreateGroup
 ```
 
 #### Response
@@ -562,11 +564,10 @@ account to the root of the organization tree. Notice that the following is set:
 ```shell
 $ ACCESS_TOKEN=<token of admin>
 $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
-  -proto ovgs.proto \
-  -d '{"username": "srv-admin", "user_type": "ACCOUNT_TYPE_SERVICE_ACCOUNT",
-       "org_id": "org-acmeco", "group_id": "org-acmeco", "user_role":
-       "USER_ROLE_ADMIN"}' \
-  www.a-network-vendor.io:443 ovgs.v1.OwnershipVoucherService/AddUserRole
+    -proto ovgs.proto                               \
+    -d '{"username": "srv-admin", "user_type": "ACCOUNT_TYPE_SERVICE_ACCOUNT", "org_id": "org-acmeco", "group_id": "org-acmeco", "user_role": "USER_ROLE_ADMIN"}' \
+  www.a-network-vendor.io:443                       \
+  ovgs.v1.OwnershipVoucherService/AddUserRole
 ```
 
 #### Response
@@ -594,8 +595,10 @@ that the following are set:
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin>
 $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
-  -proto ovgs.proto -d '{"username": "user-admin-on-default", "user_type": "ACCOUNT_TYPE_USER", "org_id": "org-acmeco", "group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab", "user_role": "ADMIN"}' \
-  www.a-network-vendor.io:443 ovgs.v1.OwnershipVoucherService/AddUserRole
+    -proto ovgs.proto                               \
+    -d '{"username": "user-admin-on-default", "user_type": "ACCOUNT_TYPE_USER", "org_id": "org-acmeco", "group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab", "user_role": "ADMIN"}' \
+    www.a-network-vendor.io:443                     \
+    ovgs.v1.OwnershipVoucherService/AddUserRole
 ```
 
 #### Response
@@ -641,8 +644,10 @@ token of the srv-admin user, the following response is seen:
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin>
 $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
-  -proto ovgs.proto -d '{"username": "srv-admin", "user_type": "ACCOUNT_TYPE_SERVICE_ACCOUNT", "org_id": "org-acmeco"}' \
-  www.a-network-vendor.io:443 ovgs.v1.OwnershipVoucherService/GetUserRole
+    -proto ovgs.proto                               \
+    -d '{"username": "srv-admin", "user_type": "ACCOUNT_TYPE_SERVICE_ACCOUNT", "org_id": "org-acmeco"}' \
+    www.a-network-vendor.io:443                     \
+    ovgs.v1.OwnershipVoucherService/GetUserRole
 ```
 
 ```text
@@ -653,11 +658,10 @@ Now, if use access token of srv-admin-on-default is used, no roles will be seen.
 
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin-on-default>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"                          \
-  -proto ovgs.proto                                                        \
- -d '{"username": "srv-admin",                                             \
-     "user_type": "ACCOUNT_TYPE_SERVICE_ACCOUNT", "org_id": "org-acmeco"}' \
- www.a-network-vendor.io:443                                               \
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
+    -proto ovgs.proto                               \
+   -d '{"username": "srv-admin", "user_type": "ACCOUNT_TYPE_SERVICE_ACCOUNT", "org_id": "org-acmeco"}' \
+   www.a-network-vendor.io:443                      \
  ovgs.v1.OwnershipVoucherService/GetUserRole
 ```
 
@@ -669,13 +673,11 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"                          \
 
 ```shell
  ACCESS_TOKEN=<token of srv-admin-on-default>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"                             \
-  -proto ovgs.proto                                                           \
-  -d '{"group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab",              \
-       "certificate_der": "MIIHRzCCss { ... snipped ... } OEGsiDoRSlA==",     \
-       "revocation_checks": true, "expiry_time": “2023-02-25T00:00:00.000Z”}' \
-  www.a-network-vendor.io:443                                                 \
-  ovgs.v1.OwnershipVoucherService/CreateDomainCert
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
+    -proto ovgs.proto                               \
+    -d '{"group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab", "certificate_der": "MIIHRzCCss { ... snipped ... } OEGsiDoRSlA==", "revocation_checks": true, "expiry_time": “2023-02-25T00:00:00.000Z”}' \
+    www.a-network-vendor.io:443                     \
+    ovgs.v1.OwnershipVoucherService/CreateDomainCert
 ```
 
 ```text
@@ -686,9 +688,10 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"                             
 
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin-on-default>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" -proto ovgs.proto \
-  -d '{"cert_id": "cert-29466354-a669-4c47-91cf-f214c03626db"}'     \
-  www.a-network-vendor.io:443                                       \
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"             \
+  -proto ovgs.proto                                             \
+  -d '{"cert_id": "cert-29466354-a669-4c47-91cf-f214c03626db"}' \
+  www.a-network-vendor.io:443                                   \
   ovgs.v1.OwnershipVoucherService/CreateDomainCert
 ```
 
@@ -712,10 +715,10 @@ their `org_id` is `org-acmeco`, they can run:
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin>
 $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
-  -proto ovgs.proto                                 \
-  -d '{"group_id": "org-acmeco"}'                   \
-  www.a-network-vendor.io:443                       \
-  ovgs.v1.OwnershipVoucherService/GetGroup
+    -proto ovgs.proto                               \
+    -d '{"group_id": "org-acmeco"}'                 \
+    www.a-network-vendor.io:443                     \
+    ovgs.v1.OwnershipVoucherService/GetGroup
 ```
 
 #### Response
@@ -761,9 +764,10 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"            \
 
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" -proto ovgs.proto \
-    -d '{"serial_number": "ABC101"}'                                  \
-    www.a-network-vendor.io:443                                       \
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
+    -proto ovgs.proto                               \
+    -d '{"serial_number": "ABC101"}'                \
+    www.a-network-vendor.io:443                     \
     ovgs.v1.OwnershipVoucherService/GetSerial
 ```
 
@@ -781,9 +785,11 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" -proto ovgs.proto \
 
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin-on-default>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" -proto ovgs.proto \
-  -d '{"group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab"}' \
-  www.a-network-vendor.io:443 ovgs.v1.OwnershipVoucherService/GetGroup
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"                 \
+    -proto ovgs.proto                                               \
+    -d '{"group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab"}' \
+    www.a-network-vendor.io:443                                     \
+    ovgs.v1.OwnershipVoucherService/GetGroup
 
 ```
 
@@ -812,11 +818,10 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" -proto ovgs.proto \
 
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin-on-default>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" -proto ovgs.proto \
-    -d '{"serial_number": "ABC101",                                   \
-        "cert_id": "cert-29466354-a669-4c47-91cf-f214c03626db",       \
-         "lifetime": “2023-02-25T00:00:00.000Z”, "ien": "30065"}'     \
-    www.a-network-vendor.io:443                                       \
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"               \
+    -proto ovgs.proto                                             \
+    -d '{"serial_number": "ABC101", "cert_id": "cert-29466354-a669-4c47-91cf-f214c03626db", "lifetime": “2023-02-25T00:00:00.000Z”, "ien": "30065"}' \
+    www.a-network-vendor.io:443                                   \
     ovgs.v1.OwnershipVoucherService/GetOwnershipVoucher
 ```
 
