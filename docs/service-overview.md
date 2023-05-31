@@ -23,25 +23,25 @@ the use of an OIDC-based authentication environment.
 ```mermaid
 flowchart TB
 
-    orgBlock["`Org: AcmeCo
+    orgBlock["Org: AcmeCo
     Org ID: org-acmeco
-    Users = \[\{username = admin, role = admin\}\]`"]
+    Users = [{username = admin, role = admin}]"]
 
-    topGroup("`Group: Default
+    topGroup("Group: Default
     Group ID: group-e51b5c2c-eda1-4c27-8a86-ece7faab33f
     Domain Certs = [<x509 domain cert 1>, <x509 domain cert 2>]
     Switch Serials = [JGEXXXXXX]
-    Users = [{username = useracm, role = requestor}]`")
+    Users = [{username = useracm, role = requestor}]")
 
-    siteA("`Group: SiteA
+    siteA("Group: SiteA
     Group ID: group-ad636092-fbc4-446c-ab2f-9df16719613a
     Switch Serials = [GACXXXXXX]
-    Users: [{username = userconsulting, role = admin}]`")
+    Users: [{username = userconsulting, role = admin}]")
 
-    siteB("`
+    siteB("
     Group: SiteB
     Group ID: group-79ef6ff1-98d1-4fa7-98f3-7d98af4ee6ee
-    Users: [{username = siteb, role = requestor}]`")
+    Users: [{username = siteb, role = requestor}]")
 
     orgBlock --> topGroup
     topGroup --> siteA
