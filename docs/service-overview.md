@@ -7,10 +7,10 @@ vouchers](https://datatracker.ietf.org/doc/html/rfc8366) for devices they have
 been assigned. The system is designed around gRPC calls.
 
 The purpose of this service is to allow users to request ownership vouchers for
-network elements (as identified by their serial numbers) owned by their organization.
-Organizations are divided into subgroups, and serial numbers for products and
-users are assigned to groups within the organization. The sections on
-authentication and authorization provide more details on this.
+network element components (as identified by their serial number + ien) owned by
+their organization. Organizations are divided into subgroups, and serial numbers
+for products and users are assigned to groups within the organization. The
+sections on authentication and authorization provide more details on this.
 
 ## Service Authentication
 
@@ -73,13 +73,15 @@ parent group of the serial.
 
 ## Serial Numbers
 
-Ownership vouchers can be issued for network elements as identified by their
-serial number. Some products may also have a TPM Public Key associated with
-them. By default, it is assumed that all the customer-owned serials are added to
-the root group. Users with the **ASSIGNER** or **ADMIN** role can move/add
-serials within the tree from there. A serial can be assigned to a single group
-apart from the root group. See the `/GetSerial` RPC for an example of the
-details available for a given serial number.
+Ownership vouchers can be issued for components as identified by their
+serial number + ien (hereafter simply referred to as serial number, the
+inclusion of an ien as appropriate, is implied). Some products may also have a
+TPM Public Key associated with them. By default, it is assumed that all the
+customer-owned component serial numbers are added to the root group. Users with
+the **ASSIGNER** or **ADMIN** role can move/add serials within the tree from
+there. A serial can be assigned to a single group apart from the root group. See
+the `/GetSerial` RPC for an example of the details available for a given serial
+number.
 
 ## Pinned Domain Certificates (PDCs)
 
@@ -91,10 +93,11 @@ See the `/GetDomainCert` RPC for an example of this data.
 
 ## Roles
 
-Users are assigned to **ADMIN** or **REQUSTER** roles. An **ADMIN** can do
-everything that a (**ASSIGNER**, **REQUESTOR**) can do, along with requesting
-Ownership Vouchers. See `/GetGroup` RPC for an example. It is a subfield of
-group data.
+Users are assigned to **ADMIN** or **REQUSTER** or **ASSIGNER** roles. An
+**ADMIN** can do everything that a (**ASSIGNER**, **REQUESTOR**) can do, along
+with requesting Ownership Vouchers. See `/GetGroup` RPC for an example. Role
+assignment has relevance within the context of a group and associated group
+hierarchy.
 
 A vendor may also maintain specific internal roles for performing
 support-related operations. An **ADMIN** role can set up the group hierarchy and
@@ -407,7 +410,7 @@ group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 #### Example Request
 
 ```text
-serial_serial = JPEXXXX1076
+serial_number = JPEXXXX1076
 ```
 
 #### Example Response
