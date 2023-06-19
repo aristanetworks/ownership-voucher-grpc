@@ -30,12 +30,12 @@ flowchart TB
     topGroup("Group: Default
     Group ID: group-e51b5c2c-eda1-4c27-8a86-ece7faab33f
     Domain Certs = [&lt;x509 domain cert 1&gt;, &lt;x509 domain cert 2&gt;]
-    Switch Serials = [JGEXXXXXX]
+    Components = [{ien = 300YY, serial_number = JGEXXXXXX}]
     Users = [{username = useracm, role = requestor}]")
 
     siteA("Group: SiteA
     Group ID: group-ad636092-fbc4-446c-ab2f-9df16719613a
-    Switch Serials = [GACXXXXXX]
+    Components = [{ien = 300YY, serial_number = GACXXXXXX}]
     Users: [{username = userconsulting, role = admin}]")
 
     siteB("
@@ -240,9 +240,9 @@ group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 #### Example Response
 
 ```text
-Group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
+group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 cert_ids = [cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b, ]
-serial_numbers = [JPEXXXX076]
+components = [{ien = 300XX, serial_number = JPEXXXX076}]
 users = [{username = useracm, user_type = USER, org_id = org-acmeco, user_role = USER_ROLE_ADMIN}]
 ```
 
@@ -383,7 +383,7 @@ cert_id = cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b
 #### Example Request
 
 ```text
-serial_number = JPEXXXX1076
+component = {ien = 300YY, serial_number = JPEXXXX1076}
 group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 ```
 
@@ -396,7 +396,7 @@ group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 #### Example Request
 
 ```text
-serial_number = JPEXXXX1076
+component = {ien = 300YY, serial_number = JPEXXXX1076}
 group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 ```
 
@@ -409,7 +409,7 @@ group_id = group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2
 #### Example Request
 
 ```text
-serial_number = JPEXXXX1076
+component = {ien = 300YY, serial_number = JPEXXXX1076}
 ```
 
 #### Example Response
@@ -440,10 +440,9 @@ mac_addr = 00:00:5e:00:53:af
 #### Example Request
 
 ```text
-serial_number = JPE29451076
+component = {ien = 300YY, serial_number = JPE29451076}
 cert_id = cert-7ccce4fc-1b28-469a-b4f5-79a4115d772b
 lifetime = 2023-02-25T00:00:00.000Z
-ien = 30065
 ```
 
 #### Example Response
@@ -734,7 +733,13 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
 
 ```javascript
 {
-  "serial_numbers": [ "ABC101", "ABC102" ],
+  "components": [{
+          "ien": "30065",
+          "serialNumber": "ABC101"
+    }, {
+          "ien": "30065",
+          "serialNumber": "ABC102"
+    }],
   "users": [{
           "username": "admin",
           "user_type": "ACCOUNT_TYPE_USER",
@@ -755,11 +760,11 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
 
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"            \
-    -proto ovgs.proto                                          \
-    -d '{"serial_number": "ABC101",                            \
-    "group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab"}' \
-    www.a-network-vendor.io:443                                \
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"               \
+    -proto ovgs.proto                                             \
+    -d '{"component": {"ien": "30065","serial_number": "ABC101"}, \
+    "group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab"}'    \
+    www.a-network-vendor.io:443                                   \
     ovgs.v1.OwnershipVoucherService/AddSerial
 ```
 
@@ -773,10 +778,10 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"            \
 
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" \
-    -proto ovgs.proto                               \
-    -d '{"serial_number": "ABC101"}'                \
-    www.a-network-vendor.io:443                     \
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" 		   \
+    -proto ovgs.proto                               		   \
+    -d '{"component": {"ien": "30065","serial_number": "ABC101"}}' \
+    www.a-network-vendor.io:443                     		   \
     ovgs.v1.OwnershipVoucherService/GetSerial
 ```
 
@@ -829,7 +834,7 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"                 \
 $ ACCESS_TOKEN=<token of srv-admin-on-default>
 $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"               \
     -proto ovgs.proto                                             \
-    -d '{"serial_number": "ABC101", "cert_id": "cert-29466354-a669-4c47-91cf-f214c03626db", "lifetime": "2023-02-25T00:00:00.000Z", "ien": "30065"}' \
+    -d '{"component": {"ien": "30065","serial_number": "ABC101"}, "cert_id": "cert-29466354-a669-4c47-91cf-f214c03626db", "lifetime": "2023-02-25T00:00:00.000Z"}' \
     www.a-network-vendor.io:443                                   \
     ovgs.v1.OwnershipVoucherService/GetOwnershipVoucher
 ```
@@ -874,11 +879,11 @@ provided by the vendor's user management interface.
 
 ```shell
 $ ACCESS_TOKEN=<token of srv-admin-on-default>
-$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"            \
-    -proto ovgs.proto                                          \
-    -d '{"serial_number": "ABC101",                            \
-    "group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab"}' \
-    www.a-network-vendor.io:443                                \
+$ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}"               \
+    -proto ovgs.proto                                             \
+    -d '{"component": {"ien": "30065","serial_number": "ABC101"}, \
+    "group_id": "group-3e7e2431-6c73-423b-91ef-b734a13daaab"}'    \
+    www.a-network-vendor.io:443                                   \
     ovgs.v1.OwnershipVoucherService/RemoveSerial
 ```
 
