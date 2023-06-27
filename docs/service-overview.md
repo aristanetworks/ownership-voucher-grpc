@@ -187,6 +187,13 @@ A user is uniquely identified using a combination of ID (username), type, and
 the organization ID. The type of user supported today are either **USER** for a
 SSO user, or **SERVICE_ACCOUNT** for a service account.
 
+USER represents a user account, tied to their identity, as specified by the
+authentication mechanism provided. SERVICE_ACCOUNT provides an identity that is
+not tied to a human/user and is intended for programmatic access from any
+app/service (say the bootstrap server) to the ovgs service. This can typically
+be achieved by creating service accounts (with some name), and issuing long
+lived tokens against that service account name.
+
 ## Bootstrapping an Organization
 
 The process of bootstrapping an organization is expected to be vendor dependent
@@ -418,6 +425,7 @@ component = {ien = 300YY, serial_number = JPEXXXX1076}
 public_key_der = <TPM public key, ASN.1 der encoded (if applicable for this part)>
 group_ids = [group-e51b5c2c-eda1-4c27-8a86-ece7faa0dac2]
 mac_addr = 00:00:5e:00:53:af
+model = DCS-7800-SUP
 ```
 
 ### /GetOwnershipVoucher
@@ -791,7 +799,8 @@ $ grpcurl -H "Cookie: access_token=${ACCESS_TOKEN}" 		   \
 {
   "public_key_der": "MIIBIjANBgkqhkiG9w0BA...A4M3QIDAQAB",
   "group_ids": [ "group-3e7e2431-6c73-423b-91ef-b734a13daaab", "org-acmeco" ],
-  "mac_addr": "00:00:5e:00:53:af"
+  "mac_addr": "00:00:5e:00:53:af",
+  "model": "DCS-7800-SUP"
 }
 ```
 

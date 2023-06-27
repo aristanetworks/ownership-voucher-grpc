@@ -44,7 +44,13 @@ enum UserRole {
 
 enum AccountType {
   ACCOUNT_TYPE_UNSPECIFIED = 0;
+  // USER represents a user account, tied to their identity, as specified by the
+  // authentication mechanism provided
   ACCOUNT_TYPE_USER = 1;
+  // SERVICE_ACCOUNT provides an identity that is not tied to a human/user and is intended for
+  // programmatic access from any app/service (say the bootstrap server) to the ovgs service
+  // This can typically be achieved by creating service accounts (with some name), and issuing
+  // long lived tokens against that service account name
   ACCOUNT_TYPE_SERVICE_ACCOUNT = 2;
 }
 
@@ -215,6 +221,8 @@ message GetSerialResponse {
   repeated string group_ids = 2;
   // SKU mac address
   string mac_addr = 3;
+  // SKU/Hardware model name
+  string model = 4;
 }
 
 message GetOwnershipVoucherRequest {
