@@ -10,7 +10,7 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/aristanetworks/ownership-voucher-grpc/ovgs";
 
 // The OVGS service defines a heirarchy of 'groups', which are identified by a
-// group_id (allocated by the server). Each group can have several  child groups;
+// group_id (allocated by the server). Each group can have several child groups;
 // Pinned Domain Certs are associated to a group, serial numbers can be assigned to a
 // group (which serves to limit the set of Users who can issue vouchers for those
 // serial numbers to Users who have the necessary permissions in that group)
@@ -116,7 +116,7 @@ message DeleteGroupResponse {
 // Roles are assigned to users in the context of a group, giving them
 // certain permissions (as defined by that role) within the group.
 // A User can assign a role to another User only if it has a role with
-// equal or higher privileges. The follow assignments are possible -
+// equal or higher privileges. The following assignments are possible -
 // Caller Role    |   Assignable Roles
 //  ADMIN         |    ADMIN, ASSIGNER, REQUESTOR
 //  ASSIGNER      |    ASSIGNER, REQUESTOR
