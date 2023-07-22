@@ -345,11 +345,12 @@ service OwnershipVoucherService {
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetDomainCert(GetDomainCertRequest) returns (GetDomainCertResponse);
 
-  // GetOwnershipVoucher issues ownership voucher and returns TPM public 
-  // key for the serial number (if it exists/if applicable)
+  // GetOwnershipVoucher issues ownership voucher for the serial number (if it
+  // exists/if applicable)
   // Errors will be returned:
-  // INVALID_ARGUMENT if serial number, IEN or lifetime is empty, lifetime is in the past
-  // or the IEN supplied isn't applicable for the voucher issuer
+  // INVALID_ARGUMENT if serial number, IEN, cert_id, or lifetime are empty,
+  // lifetime is in the past or the IEN supplied isn't applicable for the voucher
+  // issuer
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetOwnershipVoucher(GetOwnershipVoucherRequest) returns (GetOwnershipVoucherResponse);
 }
