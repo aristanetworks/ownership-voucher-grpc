@@ -244,7 +244,7 @@ message GetOwnershipVoucherResponse {
 service OwnershipVoucherService {
   // CreateGroup creates a group as a child of an existing group.
   // Errors will be returned:
-  // INVALID_ARGUMENT if the description is empty
+  // INVALID_ARGUMENT if either parent or description is empty
   // NOT_FOUND if the parent group doesn't exist, as specified in request
   // PERMISSION_DENIED if the user doesn't have access to the parent group
   // Roles with permission to invoke this = ADMIN
