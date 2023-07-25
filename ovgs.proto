@@ -269,17 +269,18 @@ service OwnershipVoucherService {
   rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
 
   // AddUserRole will assign a role to a user in a named group.
-  // Username is unique to an Org ID and Username.
+  // Username is unique to an Org ID.
   // Errors will be returned:
-  // INVALID_ARGUMENT if the username is empty
-  // NOT_FOUND if the group doesn't exist, as specified in the request
-  // FAILED_PRECONDITION if any of the paramters doesn't exist.
-  // ALREADY_EXISTS if user already exists in the group
-  // PERMISSION_DENIED if the user doesn't have access to the group.
+  // INVALID_ARGUMENT if the username or group_id are empty
+  // NOT_FOUND if the group doesn't exist.
+  // FAILED_PRECONDITION if any of username, org_id, or group_id do not exist.
+  // ALREADY_EXISTS if username is already a member of the group.
+  // PERMISSION_DENIED if the calling user doesn't have access to the group.
   // Roles with permission to invoke this = ADMIN
   rpc AddUserRole(AddUserRoleRequest) returns (AddUserRoleResponse);
+
   // RemoveUserRole removes a role from a user in a named group.
-  // Username is unique to an Org ID and Username.
+  // Username is unique to an Org ID.
   // Errors will be returned:
   // INVALID_ARGUMENT if the username is empty
   // NOT_FOUND if the group doesn't exist or if the user and role
@@ -288,7 +289,7 @@ service OwnershipVoucherService {
   // Roles with permission to invoke this = ADMIN
   rpc RemoveUserRole(RemoveUserRoleRequest) returns (RemoveUserRoleResponse);
   // GetUserRole returns the roles the user is assigned in the group.
-  // Username is unique to an Org ID and Username.
+  // Username is unique to an Org ID.
   // A user can only view roles of another user in the groups that
   // it has a role assigned to.
   // Errors will be returned:
@@ -301,7 +302,7 @@ service OwnershipVoucherService {
   // AddSerial assigns the serial to the group.
   // Errors will be returned:
   // INVALID_ARGUMENT if the serial number is empty or the IEN supplied
-  // isn't applicable f the voucher issuer
+  // isn't applicable for the voucher issuer
   // NOT_FOUND if the serial number or group id doesn't exist
   // ALREADY_EXISTS if serial_number already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
