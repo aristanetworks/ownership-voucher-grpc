@@ -10,13 +10,15 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/aristanetworks/ownership-voucher-grpc/ovgs";
 
 // The OVGS service defines a heirarchy of 'groups', which are identified by a
-// group_id (allocated by the server). Each group can have several child groups;
+// group_id (allocated by the server). Each group can have several  child groups;
 // Pinned Domain Certs are associated to a group, serial numbers can be assigned to a
 // group (which serves to limit the set of Users who can issue vouchers for those
 // serial numbers to Users who have the necessary permissions in that group)
 // Groups are created by users (except the root group, more on this later) and roles
 // are assigned to users (limiting the set of operations a user can invoke) per group.
 // Any permissions accorded by these roles on a group are heirarchical in nature.
+
+// Users are uniquely identified by the tuple username, user_type, org_id.
 
 // Note that the creation of a User is external to the ovgs service. Users may be
 // created by any mechanism that the service implementor may offer. It is assumed
@@ -116,7 +118,7 @@ message DeleteGroupResponse {
 // Roles are assigned to users in the context of a group, giving them
 // certain permissions (as defined by that role) within the group.
 // A User can assign a role to another User only if it has a role with
-// equal or higher privileges. The following assignments are possible -
+// equal or higher privileges. The follow assignments are possible -
 // Caller Role    |   Assignable Roles
 //  ADMIN         |    ADMIN, ASSIGNER, REQUESTOR
 //  ASSIGNER      |    ASSIGNER, REQUESTOR
@@ -269,19 +271,17 @@ service OwnershipVoucherService {
   rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
 
   // AddUserRole will assign a role to a user in a named group.
-  // Username is unique to an Org ID.
+  // Username is unique to an username, org_id, user_type tuple.
   // Errors will be returned:
   // INVALID_ARGUMENT if any field is empty
   // NOT_FOUND if the group doesn't exist, as specified in the request
   // FAILED_PRECONDITION if any of the paramters do not exist.
   // ALREADY_EXISTS if user already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group.
-
   // Roles with permission to invoke this = ADMIN
   rpc AddUserRole(AddUserRoleRequest) returns (AddUserRoleResponse);
-
   // RemoveUserRole removes a role from a user in a named group.
-  // Username is unique to an Org ID.
+  // Username is unique to an username, org_id, user_type tuple.
   // Errors will be returned:
   // INVALID_ARGUMENT if any field is empty
   // NOT_FOUND if the group doesn't exist or if the user and role
@@ -290,7 +290,7 @@ service OwnershipVoucherService {
   // Roles with permission to invoke this = ADMIN
   rpc RemoveUserRole(RemoveUserRoleRequest) returns (RemoveUserRoleResponse);
   // GetUserRole returns the roles the user is assigned in the group.
-  // Username is unique to an Org ID.
+  // Username is unique to an username, org_id, user_type tuple.
   // A user can only view roles of another user in the groups that
   // it has a role assigned to.
   // Errors will be returned:
@@ -303,7 +303,7 @@ service OwnershipVoucherService {
   // AddSerial assigns the serial to the group.
   // Errors will be returned:
   // INVALID_ARGUMENT if the serial number is empty or the IEN supplied
-  // isn't applicable for the voucher issuer
+  // isn't applicable f the voucher issuer
   // NOT_FOUND if the serial number or group id doesn't exist
   // ALREADY_EXISTS if serial_number already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
@@ -347,12 +347,11 @@ service OwnershipVoucherService {
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetDomainCert(GetDomainCertRequest) returns (GetDomainCertResponse);
 
-  // GetOwnershipVoucher issues ownership voucher for the serial number (if it
-  // exists/if applicable)
+  // GetOwnershipVoucher issues ownership voucher and returns TPM public 
+  // key for the serial number (if it exists/if applicable)
   // Errors will be returned:
-  // INVALID_ARGUMENT if serial number, IEN, cert_id, or lifetime are empty,
-  // lifetime is in the past or the IEN supplied isn't applicable for the voucher
-  // issuer
+  // INVALID_ARGUMENT if serial number, IEN or lifetime is empty, lifetime is in the past
+  // or the IEN supplied isn't applicable for the voucher issuer
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetOwnershipVoucher(GetOwnershipVoucherRequest) returns (GetOwnershipVoucherResponse);
 }
