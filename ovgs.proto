@@ -271,7 +271,7 @@ service OwnershipVoucherService {
   // AddUserRole will assign a role to a user in a named group.
   // Username is unique to an Org ID and Username.
   // Errors will be returned:
-  // INVALID_ARGUMENT if the username is empty
+  // INVALID_ARGUMENT if any field is empty
   // NOT_FOUND if the group doesn't exist, as specified in the request
   // FAILED_PRECONDITION if any of the paramters doesn't exist.
   // ALREADY_EXISTS if user already exists in the group
@@ -281,7 +281,7 @@ service OwnershipVoucherService {
   // RemoveUserRole removes a role from a user in a named group.
   // Username is unique to an Org ID and Username.
   // Errors will be returned:
-  // INVALID_ARGUMENT if the username is empty
+  // INVALID_ARGUMENT if any field is empty
   // NOT_FOUND if the group doesn't exist or if the user and role
   // doesn't exist in the group.
   // PERMISSION_DENIED if user doesn't have access to the group
@@ -292,7 +292,7 @@ service OwnershipVoucherService {
   // A user can only view roles of another user in the groups that
   // it has a role assigned to.
   // Errors will be returned:
-  // INVALID_ARGUMENT if the username is empty
+  // INVALID_ARGUMENT if any field is empty
   // NOT_FOUND if the group or the user doesn't exist.
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetUserRole(GetUserRoleRequest) returns (GetUserRoleResponse);
