@@ -247,6 +247,8 @@ service OwnershipVoucherService {
   // Errors will be returned:
   // INVALID_ARGUMENT if either parent or description is empty
   // NOT_FOUND if the parent group doesn't exist, as specified in request
+  // ALREADY_EXISTS if a group already exists with the same parent group
+  // and description.
   // PERMISSION_DENIED if the user doesn't have access to the parent group
   // Roles with permission to invoke this = ADMIN
   rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
@@ -262,7 +264,7 @@ service OwnershipVoucherService {
   // Roles with permission to invoke this = ADMIN
   rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse);
   // GetGroup returns the domain-certs (keyed by id), components,
-  // and user/role mappings for that group and the child_group_ids.
+  // user/role mappings for that group, and the child_group_ids.
   // Errors will be returned:
   // NOT_FOUND if the group doesn't exist
   // PERMISSION_DENIED if the user doesn't have access to the group
@@ -273,11 +275,11 @@ service OwnershipVoucherService {
   // Username is unique to an Org ID.
   // Errors will be returned:
   // INVALID_ARGUMENT if any field is empty
-  // NOT_FOUND if the group doesn't exist.
+  // NOT_FOUND if the group doesn't exist, as specified in the request
   // FAILED_PRECONDITION if any of user tuple (username, org_id, user_type)
   // or group_id do not exist.
-  // ALREADY_EXISTS if username is already a member of the group.
-  // PERMISSION_DENIED if the calling user doesn't have access to the group.
+  // ALREADY_EXISTS if user already exists in the group
+  // PERMISSION_DENIED if the user doesn't have access to the group.
   // Roles with permission to invoke this = ADMIN
   rpc AddUserRole(AddUserRoleRequest) returns (AddUserRoleResponse);
   // RemoveUserRole removes a role from a user in a named group.
