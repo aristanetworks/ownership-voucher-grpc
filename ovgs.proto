@@ -10,7 +10,7 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/aristanetworks/ownership-voucher-grpc/ovgs";
 
 // The OVGS service defines a heirarchy of 'groups', which are identified by a
-// group_id (allocated by the server). Each group can have several  child groups;
+// group_id (allocated by the server). Each group can have several child groups;
 // Pinned Domain Certs are associated to a group, serial numbers can be assigned to a
 // group (which serves to limit the set of Users who can issue vouchers for those
 // serial numbers to Users who have the necessary permissions in that group)
@@ -118,7 +118,7 @@ message DeleteGroupResponse {
 // Roles are assigned to users in the context of a group, giving them
 // certain permissions (as defined by that role) within the group.
 // A User can assign a role to another User only if it has a role with
-// equal or higher privileges. The follow assignments are possible -
+// equal or higher privileges. The following assignments are possible -
 // Caller Role    |   Assignable Roles
 //  ADMIN         |    ADMIN, ASSIGNER, REQUESTOR
 //  ASSIGNER      |    ASSIGNER, REQUESTOR
@@ -303,7 +303,7 @@ service OwnershipVoucherService {
   // AddSerial assigns the serial to the group.
   // Errors will be returned:
   // INVALID_ARGUMENT if the serial number is empty or the IEN supplied
-  // isn't applicable f the voucher issuer
+  // isn't applicable for the voucher issuer
   // NOT_FOUND if the serial number or group id doesn't exist
   // ALREADY_EXISTS if serial_number already exists in the group
   // PERMISSION_DENIED if the user doesn't have access to the group
@@ -347,11 +347,11 @@ service OwnershipVoucherService {
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetDomainCert(GetDomainCertRequest) returns (GetDomainCertResponse);
 
-  // GetOwnershipVoucher issues ownership voucher and returns TPM public 
-  // key for the serial number (if it exists/if applicable)
+  // GetOwnershipVoucher issues ownership voucher for the serial number (if it
+  // exists/if applicable)
   // Errors will be returned:
-  // INVALID_ARGUMENT if serial number, IEN or lifetime is empty, lifetime is in the past
-  // or the IEN supplied isn't applicable for the voucher issuer
+  // INVALID_ARGUMENT if any field is empty, lifetime is in the past, or
+  // the IEN supplied isn't applicable for the voucher issuer
   // Roles with permission to invoke this = ADMIN, ASSIGNER, REQUESTOR
   rpc GetOwnershipVoucher(GetOwnershipVoucherRequest) returns (GetOwnershipVoucherResponse);
 }
