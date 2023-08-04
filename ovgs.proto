@@ -18,6 +18,8 @@ option go_package = "github.com/aristanetworks/ownership-voucher-grpc/ovgs";
 // are assigned to users (limiting the set of operations a user can invoke) per group.
 // Any permissions accorded by these roles on a group are heirarchical in nature.
 
+// Users are uniquely identified by the tuple username, user_type, org_id.
+
 // Note that the creation of a User is external to the ovgs service. Users may be
 // created by any mechanism that the service implementor may offer. It is assumed
 // that all such Users are known to ovgs, which only deals with the assignment of
@@ -272,7 +274,7 @@ service OwnershipVoucherService {
   rpc GetGroup(GetGroupRequest) returns (GetGroupResponse);
 
   // AddUserRole will assign a role to a user in a named group.
-  // Username is unique to an Org ID.
+  // Username is unique to an username, org_id, user_type tuple.
   // Errors will be returned:
   // INVALID_ARGUMENT if any field is empty
   // NOT_FOUND if the group doesn't exist, as specified in the request
@@ -283,7 +285,7 @@ service OwnershipVoucherService {
   // Roles with permission to invoke this = ADMIN
   rpc AddUserRole(AddUserRoleRequest) returns (AddUserRoleResponse);
   // RemoveUserRole removes a role from a user in a named group.
-  // Username is unique to an Org ID.
+  // Username is unique to an username, org_id, user_type tuple.
   // Errors will be returned:
   // INVALID_ARGUMENT if any field is empty
   // NOT_FOUND if the group doesn't exist or if the user tuple is not a
@@ -292,7 +294,9 @@ service OwnershipVoucherService {
   // Roles with permission to invoke this = ADMIN
   rpc RemoveUserRole(RemoveUserRoleRequest) returns (RemoveUserRoleResponse);
   // GetUserRole returns the roles the user is assigned in the group.
-  // Username is unique to an Org ID.
+  // Username is unique to an username, org_id, user_type tuple.
+  // A user can only view roles of another user in the groups that
+  // it has a role assigned to.
   // Errors will be returned:
   // INVALID_ARGUMENT if any field is empty
   // NOT_FOUND if the group doesn't exist or the user tuple is not a member.
